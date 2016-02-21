@@ -1,5 +1,6 @@
 package airpygs;
 
+import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.TextArea;
@@ -7,6 +8,8 @@ import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
+
+import java.util.ArrayList;
 
 /**
  * Created by fabrizioscimia on 11/01/16.
@@ -17,16 +20,18 @@ public class serialHandler implements SerialPortEventListener{
     private TextArea console;
     private String serialPortName;
     private int baudRate;
-    private String tmpString;
+    private byte[] tmpBytes;
+    private RxBuffer buff;
 
     public StringProperty readString = new SimpleStringProperty("");
 
-    public serialHandler(TextArea text, String sp, String br) {
+    public serialHandler(TextArea text, String sp, String br, RxBuffer b) {
 
         console = text;
         serialPortName = sp;
         baudRate = Integer.parseInt(br);
         serial = new SerialPort(serialPortName);
+        buff = b;
 
         try {
             serial.openPort();//Open serial port
@@ -46,6 +51,7 @@ public class serialHandler implements SerialPortEventListener{
             }
 
             //Set params. Also you can set params by this string: serialPort.setParams(9600, 8, 1, 0);
+            //int mask = SerialPort.MASK_RXCHAR;//Prepare mask
             int mask = SerialPort.MASK_RXCHAR + SerialPort.MASK_CTS + SerialPort.MASK_DSR;//Prepare mask
             serial.setEventsMask(mask);//Set mask
             serial.addEventListener(this);//Add SerialPortEventListener
@@ -68,32 +74,34 @@ public class serialHandler implements SerialPortEventListener{
                 //Read data, if 10 bytes available
                 try {
                     //byte buffer[] = serial.readBytes(10);
-                    tmpString = serial.readString();
-                    readString.set(tmpString);
-                    //System.out.println(tmpString);
+                    tmpBytes = serial.readBytes();
+
+                    //buff.addToRxBuffer(tmpString);
+                    //readString.set(tmpString);
+                    System.out.println(HexBin.encode(tmpBytes));
                 }
                 catch (SerialPortException ex) {
                     System.out.println(ex);
                 }
             //}
+            /*else if(event.isCTS()){//If CTS line has changed state
+                if(event.getEventValue() == 1){//If line is ON
+                    System.out.println("CTS - ON");
+                }
+                else {
+                    System.out.println("CTS - OFF");
+                }
+            }
+            else if(event.isDSR()){///If DSR line has changed state
+                if(event.getEventValue() == 1){//If line is ON
+                    System.out.println("DSR - ON");
+                }
+                else {
+                    System.out.println("DSR - OFF");
+                }
+            }*/
         }
 
     }
 
-    /*
-
-    @Override
-    public void run() {
-
-        //console.setText("Waiting for data on Serial \n" );
-
-        try {
-
-            //console.setText(serial.readString() + "\n\n");
-
-            //System.out.println(serial.r + "\n");
-        } catch (SerialPortException e) {
-            e.printStackTrace();
-        }
-    }*/
 }

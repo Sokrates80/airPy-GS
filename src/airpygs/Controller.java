@@ -17,6 +17,8 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
 
     serialHandler cli;
+    RxDecoder rxdec = null;
+    RxBuffer buffer;
     boolean cliConnected = false;
 
     @FXML
@@ -49,6 +51,7 @@ public class Controller implements Initializable {
                 if (cliConnected) {
 
                     try {
+                        rxdec.stopRxDecoder();
                         cli.getSerial().closePort();
                     } catch (SerialPortException e) {
                         e.printStackTrace();
@@ -57,13 +60,24 @@ public class Controller implements Initializable {
                     bConnect.setText("Connect");
                     cliConnected = false;
 
+
                 } else {
 
                     //cliConsole.setText("Cli Started\n\n");
                     bConnect.setText("Disconnect");
-                    cli = new serialHandler(cliConsole,(String)serialCombo.getValue(),(String)baudRateCombo.getValue());
+                    buffer = new RxBuffer();
+                    cli = new serialHandler(cliConsole,(String)serialCombo.getValue(),(String)baudRateCombo.getValue(),buffer);
                     cliConsole.textProperty().bind(cli.readString);
                     cliConnected = true;
+
+                    if (rxdec == null){
+                        rxdec = new RxDecoder(cli,buffer);
+                        rxdec.start();
+                        rxdec.startRxDecoder();
+                    } else {
+                        rxdec.startRxDecoder();
+                    }
+
                 }
 
 
