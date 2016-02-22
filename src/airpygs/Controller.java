@@ -1,16 +1,15 @@
 package airpygs;
 
+import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.stage.DirectoryChooser;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -20,6 +19,7 @@ public class Controller implements Initializable {
     RxDecoder rxdec = null;
     RxBuffer buffer;
     boolean cliConnected = false;
+    File airPyDestinationFolder = null;
 
     @FXML
     private TextArea cliConsole;
@@ -33,6 +33,59 @@ public class Controller implements Initializable {
     @FXML
     private ChoiceBox baudRateCombo;
 
+    @FXML
+    private void handleSetSourceAction(final ActionEvent event)
+    {
+        DirectoryChooser folderChooser = new DirectoryChooser();
+        folderChooser.setInitialDirectory(airPyDestinationFolder);
+        airPyDestinationFolder = folderChooser.showDialog(null);
+    }
+
+    @FXML
+    private void handleConnectButtonAction(final ActionEvent event)
+    {
+        if (cliConnected) {
+            connect();
+        } else {
+            disconnect();
+        }
+    }
+
+    @FXML
+    private void handleUpdateButtonAction(final ActionEvent event)
+    {
+        //TODO: Copy from src to dst
+        cliConsole.setText("Code updated\n\n");
+    }
+
+    private void connect() {
+        try {
+            rxdec.stopRxDecoder();
+            cli.getSerial().closePort();
+        } catch (SerialPortException e) {
+            e.printStackTrace();
+        }
+        bConnect.setText("Connect");
+        cliConnected = false;
+    }
+
+    private void disconnect() {
+        //cliConsole.setText("Cli Started\n\n");
+        bConnect.setText("Disconnect");
+        buffer = new RxBuffer();
+        cli = new serialHandler(cliConsole,(String)serialCombo.getValue(),(String)baudRateCombo.getValue(),buffer);
+        cliConsole.textProperty().bind(cli.readString);
+        cliConnected = true;
+
+        if (rxdec == null){
+            rxdec = new RxDecoder(cli,buffer);
+            rxdec.start();
+            rxdec.startRxDecoder();
+        } else {
+            rxdec.startRxDecoder();
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         assert cliConsole != null : "fx:id=\"cliConsole\" was not injected: check your FMXL";
@@ -41,49 +94,5 @@ public class Controller implements Initializable {
 
         baudRateCombo.setItems(FXCollections.observableArrayList("9600","14400","38400","57600","115200"));
         serialCombo.setItems(FXCollections.observableArrayList(SerialPortList.getPortNames()));
-
-        bConnect.setText("Connect");
-        bConnect.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-
-                if (cliConnected) {
-
-                    try {
-                        rxdec.stopRxDecoder();
-                        cli.getSerial().closePort();
-                    } catch (SerialPortException e) {
-                        e.printStackTrace();
-                    }
-
-                    bConnect.setText("Connect");
-                    cliConnected = false;
-
-
-                } else {
-
-                    //cliConsole.setText("Cli Started\n\n");
-                    bConnect.setText("Disconnect");
-                    buffer = new RxBuffer();
-                    cli = new serialHandler(cliConsole,(String)serialCombo.getValue(),(String)baudRateCombo.getValue(),buffer);
-                    cliConsole.textProperty().bind(cli.readString);
-                    cliConnected = true;
-
-                    if (rxdec == null){
-                        rxdec = new RxDecoder(cli,buffer);
-                        rxdec.start();
-                        rxdec.startRxDecoder();
-                    } else {
-                        rxdec.startRxDecoder();
-                    }
-
-                }
-
-
-
-            }
-        });
-
     }
 }
