@@ -7,21 +7,23 @@ import java.util.ArrayList;
  */
 public class RxBuffer {
 
-    private ArrayList buffer;
+    private ArrayList<Byte> buffer;
 
     public RxBuffer(){
-        buffer = new ArrayList();
+        buffer = new ArrayList<Byte>();
     }
 
-    public synchronized char readRxBuffer() throws InterruptedException {
+    public synchronized byte readRxBuffer() throws InterruptedException {
         if (buffer.size() == 0) {
             wait();
         }
-        return (char) buffer.remove(0);
+        return buffer.remove(0);
     }
 
-    public synchronized void addToRxBuffer(String s){
-        buffer.add(s);
+    public synchronized void addToRxBuffer(byte[] newBytes){
+        for (int i = 0; i <  newBytes.length; i++){
+            buffer.add(newBytes[i]);
+        }
         notifyAll();
     }
 }

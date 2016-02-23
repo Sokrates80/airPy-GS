@@ -1,15 +1,21 @@
 package airpygs;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -20,6 +26,15 @@ public class Controller implements Initializable {
     RxBuffer buffer;
     boolean cliConnected = false;
     File airPyDestinationFolder = null;
+    File connectLedFileOn = new File("./resources/img/switch_on.png");
+    Image connectLedImageOn = new Image(connectLedFileOn.toURI().toString());
+    File connectLedFileOff = new File("./resources/img/switch_off.png");
+    Image connectLedImageOff = new Image(connectLedFileOff.toURI().toString());
+    File connectLedFileHeartBeat = new File("./resources/img/switch_heartbeat.png");
+    Image connectLedImageHeartBeat = new Image(connectLedFileHeartBeat.toURI().toString());
+
+    @FXML
+    private ImageView connectLed;
 
     @FXML
     private TextArea cliConsole;
@@ -67,6 +82,7 @@ public class Controller implements Initializable {
         }
         bConnect.setText("Connect");
         cliConnected = false;
+        connectLed.setImage(connectLedImageOff);
     }
 
     private void disconnect() {
@@ -77,13 +93,11 @@ public class Controller implements Initializable {
         cliConsole.textProperty().bind(cli.readString);
         cliConnected = true;
 
-        if (rxdec == null){
-            rxdec = new RxDecoder(cli,buffer);
-            rxdec.start();
-            rxdec.startRxDecoder();
-        } else {
-            rxdec.startRxDecoder();
-        }
+        rxdec = new RxDecoder(buffer);
+        rxdec.start();
+        rxdec.startRxDecoder();
+
+        connectLed.setImage(connectLedImageOn);
     }
 
     @Override
@@ -91,6 +105,7 @@ public class Controller implements Initializable {
         assert cliConsole != null : "fx:id=\"cliConsole\" was not injected: check your FMXL";
         assert bConnect != null : "fx:id=\"bConnect\" was not injected: check your FMXL";
         assert serialCombo != null : "fx:id=\"serialCombo\" was not injected: check your FMXL";
+        assert connectLed != null : "fx:id=\"connectLed\" was not injected: check your FMXL";
 
         baudRateCombo.setItems(FXCollections.observableArrayList("9600","14400","38400","57600","115200"));
         serialCombo.setItems(FXCollections.observableArrayList(SerialPortList.getPortNames()));
