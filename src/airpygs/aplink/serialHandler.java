@@ -1,6 +1,5 @@
-package airpygs;
+package airpygs.aplink;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.TextArea;
@@ -8,8 +7,6 @@ import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
-
-import java.util.ArrayList;
 
 /**
  * Created by fabrizioscimia on 11/01/16.
@@ -51,7 +48,6 @@ public class serialHandler implements SerialPortEventListener{
             }
 
             //Set params. Also you can set params by this string: serialPort.setParams(9600, 8, 1, 0);
-            //int mask = SerialPort.MASK_RXCHAR;//Prepare mask
             int mask = SerialPort.MASK_RXCHAR + SerialPort.MASK_CTS + SerialPort.MASK_DSR;//Prepare mask
             serial.setEventsMask(mask);//Set mask
             serial.addEventListener(this);//Add SerialPortEventListener

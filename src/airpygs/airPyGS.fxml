@@ -53,7 +53,7 @@
                <children>
                   <ImageView fx:id="connectLed" fitHeight="76.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../../resources/img/switch_off.png" />
+                        <Image url="@../../resources/img/switch_off.png" />
                      </image>
                      <HBox.margin>
                         <Insets right="20.0" />

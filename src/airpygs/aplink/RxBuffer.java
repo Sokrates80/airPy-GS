@@ -1,4 +1,4 @@
-package airpygs;
+package airpygs.aplink;
 
 import java.util.ArrayList;
 
