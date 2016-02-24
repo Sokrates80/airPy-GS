@@ -1,4 +1,4 @@
-package airpygs;
+package airpygs.aplink;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -17,16 +17,18 @@ public class serialHandler implements SerialPortEventListener{
     private TextArea console;
     private String serialPortName;
     private int baudRate;
-    private String tmpString;
+    private byte[] tmpBytes;
+    private RxBuffer buff;
 
     public StringProperty readString = new SimpleStringProperty("");
 
-    public serialHandler(TextArea text, String sp, String br) {
+    public serialHandler(TextArea text, String sp, String br, RxBuffer b) {
 
         console = text;
         serialPortName = sp;
         baudRate = Integer.parseInt(br);
         serial = new SerialPort(serialPortName);
+        buff = b;
 
         try {
             serial.openPort();//Open serial port
@@ -67,33 +69,34 @@ public class serialHandler implements SerialPortEventListener{
             //if(event.getEventValue() == 10){//Check bytes count in the input buffer
                 //Read data, if 10 bytes available
                 try {
-                    //byte buffer[] = serial.readBytes(10);
-                    tmpString = serial.readString();
-                    readString.set(tmpString);
-                    //System.out.println(tmpString);
+                    tmpBytes = serial.readBytes();
+
+                    buff.addToRxBuffer(tmpBytes);
+                    //readString.set(tmpString);
+                   // System.out.println(HexBin.encode(tmpBytes));
                 }
                 catch (SerialPortException ex) {
                     System.out.println(ex);
                 }
             //}
+            /*else if(event.isCTS()){//If CTS line has changed state
+                if(event.getEventValue() == 1){//If line is ON
+                    System.out.println("CTS - ON");
+                }
+                else {
+                    System.out.println("CTS - OFF");
+                }
+            }
+            else if(event.isDSR()){///If DSR line has changed state
+                if(event.getEventValue() == 1){//If line is ON
+                    System.out.println("DSR - ON");
+                }
+                else {
+                    System.out.println("DSR - OFF");
+                }
+            }*/
         }
 
     }
 
-    /*
-
-    @Override
-    public void run() {
-
-        //console.setText("Waiting for data on Serial \n" );
-
-        try {
-
-            //console.setText(serial.readString() + "\n\n");
-
-            //System.out.println(serial.r + "\n");
-        } catch (SerialPortException e) {
-            e.printStackTrace();
-        }
-    }*/
 }
