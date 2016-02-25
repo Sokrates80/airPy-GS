@@ -35,7 +35,7 @@ public class RxDecoder extends Thread {
 
     public RxDecoder(RxBuffer b) {
 
-        aplinkConfig = AplinkConfigManager.getInstance().getConfig();
+        aplinkConfig = aplinkConfigManager.getInstance().getConfig();
         READING_INTERVAL = Long.decode(aplinkConfig.getProperty("rxBufferReadingTimeInterval"));
         buffer = b;
         startByteFound = false;

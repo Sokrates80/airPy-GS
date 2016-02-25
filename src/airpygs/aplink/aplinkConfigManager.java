@@ -6,21 +6,21 @@ import java.util.Properties;
 /**
  * Created by fabrizioscimia on 23/02/16.
  */
-public class AplinkConfigManager {
+public class aplinkConfigManager {
 
-    private static AplinkConfigManager instance = null;
+    private static aplinkConfigManager instance = null;
     private Properties properties;
 
-    protected AplinkConfigManager() throws IOException {
+    protected aplinkConfigManager() throws IOException {
 
         properties = new Properties();
         properties.load(getClass().getResourceAsStream("aplink.properties"));
     }
 
-    public static AplinkConfigManager getInstance() {
+    public static aplinkConfigManager getInstance() {
         if(instance == null) {
             try {
-                instance = new AplinkConfigManager();
+                instance = new aplinkConfigManager();
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
