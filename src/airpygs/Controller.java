@@ -1,5 +1,6 @@
 package airpygs;
 
+import airpygs.aplink.ConnectLed;
 import airpygs.aplink.RxBuffer;
 import airpygs.aplink.RxDecoder;
 import airpygs.aplink.serialHandler;
@@ -18,6 +19,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import static java.lang.Thread.sleep;
+
 public class Controller implements Initializable {
 
     serialHandler cli;
@@ -31,6 +34,7 @@ public class Controller implements Initializable {
     Image connectLedImageOff = new Image(connectLedFileOff.toURI().toString());
     File connectLedFileHeartBeat = new File("./resources/img/switch_heartbeat.png");
     Image connectLedImageHeartBeat = new Image(connectLedFileHeartBeat.toURI().toString());
+    boolean toggleFlag = false;
 
     @FXML
     private ImageView connectLed;
@@ -72,6 +76,27 @@ public class Controller implements Initializable {
         cliConsole.setText("Code updated\n\n");
     }
 
+    public void setConnectLed(ConnectLed led) {
+
+        switch (led) {
+
+            case ON:        connectLed.setImage(connectLedImageOn);
+                            break;
+
+            case OFF:       connectLed.setImage(connectLedImageOff);
+                            break;
+
+            case TOGGLE:    if (toggleFlag) {
+                                connectLed.setImage(connectLedImageOn);
+                                toggleFlag = false;
+                            } else {
+                                connectLed.setImage(connectLedImageHeartBeat);
+                                toggleFlag = true;
+                            }
+                            break;
+        }
+    }
+
     private void connect() {
         try {
             rxdec.stopRxDecoder();
@@ -92,7 +117,7 @@ public class Controller implements Initializable {
         cliConsole.textProperty().bind(cli.readString);
         cliConnected = true;
 
-        rxdec = new RxDecoder(buffer);
+        rxdec = new RxDecoder(buffer,this);
         rxdec.start();
         rxdec.startRxDecoder();
 

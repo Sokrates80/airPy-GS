@@ -1,5 +1,7 @@
 package airpygs.aplink;
 
+import airpygs.Controller;
+
 import java.util.Properties;
 
 /**
@@ -9,6 +11,7 @@ public class RxDecoder extends Thread {
 
     //ApLink config
     Properties aplinkConfig;
+    Controller apGui;
 
     private final long READING_INTERVAL;
     private boolean active;
@@ -16,31 +19,26 @@ public class RxDecoder extends Thread {
     private int byteIndex;
     private RxBuffer buffer;
     private byte tmpByte;
-
-    //Header fields
-    private int tmpMsgID;
-    private int tmpQCI;
-    private int tmpLastFragment;
-    private int tmpMsgTypeID;
-    private int tmpFailSafe;
-    private int tmpFlightMode;
-    private int tmpPayloadLength;
     
     //Message Specific
     private int tmpEOF;
+    private AplMessage message;
     
     //Counters
     private long validApLinkMessages;
     private long lostApLinkMessages;
 
-    public RxDecoder(RxBuffer b) {
+    public RxDecoder(RxBuffer b, Controller gui) {
 
         aplinkConfig = AplinkConfigManager.getInstance().getConfig();
+        message = new AplMessage();
+        apGui = gui;
+
+        //Decoder Parameters
         READING_INTERVAL = Long.decode(aplinkConfig.getProperty("rxBufferReadingTimeInterval"));
         buffer = b;
         startByteFound = false;
         byteIndex = 0;
-        tmpMsgID = 0;
         validApLinkMessages = 0;
         lostApLinkMessages = 0;
     }
@@ -60,25 +58,24 @@ public class RxDecoder extends Thread {
     private void parseHeader() {
         switch (byteIndex) {
 
-            case ApLinkParams.MESSAGE_ID_BYTE_1:            tmpMsgID = (unsignedByteToInt(tmpByte) << 8);
+            case ApLinkParams.MESSAGE_ID_BYTE_1:            message.setMessageID((unsignedByteToInt(tmpByte) << 8));
                                                             break;
 
-            case ApLinkParams.MESSAGE_ID_BYTE_2:            //tmpMsgID = (tmpMsgID + (int)tmpByte);
-                                                            tmpMsgID = tmpMsgID + unsignedByteToInt(tmpByte);
+            case ApLinkParams.MESSAGE_ID_BYTE_2:            message.setMessageID(message.getMessageID() + unsignedByteToInt(tmpByte));
                                                             break;
 
-            case ApLinkParams.QCI_AND_LAST_FRAGMENT_FLAG:   tmpQCI = ((unsignedByteToInt(tmpByte) & 0xF8)  >> 3);
-                                                            tmpLastFragment = ((int)(tmpByte) & 0x07);
+            case ApLinkParams.QCI_AND_LAST_FRAGMENT_FLAG:   message.setQCI((unsignedByteToInt(tmpByte) & 0xF8)  >> 3);
+                                                            message.setLastFragment((int)(tmpByte) & 0x07);
                                                             break;
 
-            case ApLinkParams.MESSAGE_TYPE_ID:              tmpMsgTypeID = (int) tmpByte;
+            case ApLinkParams.MESSAGE_TYPE_ID:              message.setMessageTypeID((int) tmpByte);
                                                             break;
 
-            case ApLinkParams.FAIL_SAFE_AND_FLIGHT_MODE:    tmpFailSafe = (((int) (tmpByte) & 0xF0) >> 4);
-                                                            tmpFlightMode = ((int)(tmpByte) & 0x0F);
+            case ApLinkParams.FAIL_SAFE_AND_FLIGHT_MODE:    message.setFailSafe(((int) (tmpByte) & 0xF0) >> 4);
+                                                            message.setFlightMode((int)(tmpByte) & 0x0F);
                                                             break;
 
-            case ApLinkParams.PAYLOAD_LENGTH:               tmpPayloadLength = (int)tmpByte;
+            case ApLinkParams.PAYLOAD_LENGTH:               message.setPayloadLength((int)tmpByte);
                                                             break;
         }
 
@@ -86,7 +83,7 @@ public class RxDecoder extends Thread {
     }
     
     private void decodeApLinkMessage(){
-        switch (tmpMsgTypeID) {
+        switch (message.getMessageTypeID()) {
 
             case ApLinkParams.AP_MESSAGE_HEARTBEAT:   decodeHeartBeat();
                                                          break;
@@ -133,7 +130,8 @@ public class RxDecoder extends Thread {
 
             if (tmpByte == tmpEOF) {
                 validApLinkMessages++;
-                System.out.println("Heartbeat Decoded -> MessageID:" + tmpMsgID + " - QCI:" + tmpQCI + " LastFragment:" + tmpLastFragment + " PayloadLength: " + tmpPayloadLength);
+                apGui.setConnectLed(ConnectLed.TOGGLE);
+                System.out.println("Heartbeat Decoded -> MessageID:" + message.getMessageID() + " - QCI:" + message.getQCI() + " LastFragment:" + message.getLastFragment() + " PayloadLength: " + message.getPayloadLength());
             } else {
                 lostApLinkMessages++;
             }
@@ -146,11 +144,11 @@ public class RxDecoder extends Thread {
         if (byteIndex == 12) {
             tmpEOF = tmpByte;
             byteIndex++;
-        } else if ((byteIndex == 11+tmpPayloadLength+1)) {
+        } else if ((byteIndex == 11+message.getPayloadLength()+1)) {
 
             if (tmpByte == tmpEOF) {
                 validApLinkMessages++;
-                System.out.println("RCInfo Decoded -> MessageID:" + tmpMsgID + " - QCI:" + tmpQCI + " LastFragment:" + tmpLastFragment + " PayloadLength: " + tmpPayloadLength);
+                System.out.println("RcInfo Decoded -> MessageID:" + message.getMessageID() + " - QCI:" + message.getQCI() + " LastFragment:" + message.getLastFragment() + " PayloadLength: " + message.getPayloadLength());
             } else {
                 lostApLinkMessages++;
             }
