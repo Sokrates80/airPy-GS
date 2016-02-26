@@ -60,10 +60,17 @@ public class Controller implements Initializable {
     Image connectLedImageOff = new Image(connectLedFileOff.toURI().toString());
     File connectLedFileHeartBeat = new File("./resources/img/switch_heartbeat.png");
     Image connectLedImageHeartBeat = new Image(connectLedFileHeartBeat.toURI().toString());
+    //File logoBigFile = new File("./resources/img/airPyLogo_big.png");
+    //Image logoBigImage = new Image(logoBigFile.toURI().toString());
+
+
     boolean toggleFlag = false;
 
     @FXML
     private ImageView connectLed;
+
+    @FXML
+    private ImageView imgLogoBig;
 
     @FXML
     private TextArea cliConsole;
@@ -186,7 +193,7 @@ public class Controller implements Initializable {
             if (cliConnected)
                 bConnect.setText("Disconnect");
             else
-                bConnect.setText("connect");
+                bConnect.setText("Connect");
         }
         else
             bConnect.setDisable(true);
@@ -205,6 +212,7 @@ public class Controller implements Initializable {
         assert bUpdate != null : "fx:id=\"bUpdate\" was not injected: check your FMXL";
         assert serialCombo != null : "fx:id=\"serialCombo\" was not injected: check your FMXL";
         assert connectLed != null : "fx:id=\"connectLed\" was not injected: check your FMXL";
+        assert imgLogoBig != null : "fx:id=\"imgLogoBig\" was not injected: check your FMXL";
 
         ObservableList baudRates = FXCollections.observableArrayList("9600","14400","38400","57600","115200");
         baudRateCombo.setItems(baudRates);
@@ -213,5 +221,6 @@ public class Controller implements Initializable {
         updateComPortList();
         updateButtons();
         connectLed.setImage(connectLedImageOff);
+
     }
 }

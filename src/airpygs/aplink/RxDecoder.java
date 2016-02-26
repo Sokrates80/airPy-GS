@@ -57,24 +57,24 @@ public class RxDecoder extends Thread {
         switch (byteIndex) {
 
             case ApLinkParams.MESSAGE_ID_BYTE_1:            message.setMessageID((unsignedByteToInt(tmpByte) << 8));
-                break;
+                                                            break;
 
             case ApLinkParams.MESSAGE_ID_BYTE_2:            message.setMessageID(message.getMessageID() + unsignedByteToInt(tmpByte));
-                break;
+                                                            break;
 
             case ApLinkParams.QCI_AND_LAST_FRAGMENT_FLAG:   message.setQCI((unsignedByteToInt(tmpByte) & 0xF8)  >> 3);
-                message.setLastFragment((int)(tmpByte) & 0x07);
-                break;
+                                                            message.setLastFragment((int)(tmpByte) & 0x07);
+                                                            break;
 
             case ApLinkParams.MESSAGE_TYPE_ID:              message.setMessageTypeID((int) tmpByte);
-                break;
+                                                            break;
 
             case ApLinkParams.FAIL_SAFE_AND_FLIGHT_MODE:    message.setFailSafe(((int) (tmpByte) & 0xF0) >> 4);
-                message.setFlightMode((int)(tmpByte) & 0x0F);
-                break;
+                                                            message.setFlightMode((int)(tmpByte) & 0x0F);
+                                                            break;
 
             case ApLinkParams.PAYLOAD_LENGTH:               message.setPayloadLength((int)tmpByte);
-                break;
+                                                            break;
         }
 
         byteIndex++;
