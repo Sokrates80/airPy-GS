@@ -73,7 +73,7 @@ public class serialHandler implements SerialPortEventListener{
 
                     buff.addToRxBuffer(tmpBytes);
                     //readString.set(tmpString);
-                   // System.out.println(HexBin.encode(tmpBytes));
+                    //System.out.println(HexBin.encode(tmpBytes));
                 }
                 catch (SerialPortException ex) {
                     System.out.println(ex);

@@ -1,9 +1,6 @@
 package airpygs;
 
-import airpygs.aplink.ConnectLed;
-import airpygs.aplink.RxBuffer;
-import airpygs.aplink.RxDecoder;
-import airpygs.aplink.serialHandler;
+import airpygs.aplink.*;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
@@ -60,11 +57,27 @@ public class Controller implements Initializable {
     Image connectLedImageOff = new Image(connectLedFileOff.toURI().toString());
     File connectLedFileHeartBeat = new File("./resources/img/switch_heartbeat.png");
     Image connectLedImageHeartBeat = new Image(connectLedFileHeartBeat.toURI().toString());
-    //File logoBigFile = new File("./resources/img/airPyLogo_big.png");
-    //Image logoBigImage = new Image(logoBigFile.toURI().toString());
+    File logoBigFile = new File("./resources/img/airPyLogo_big.png");
+    Image logoBigImage = new Image(logoBigFile.toURI().toString());
 
 
     boolean toggleFlag = false;
+
+
+    @FXML
+    private TabPane apTabPane;
+
+    @FXML
+    private ProgressBar pbCh1;
+
+    @FXML
+    private ProgressBar pbCh2;
+
+    @FXML
+    private ProgressBar pbCh3;
+
+    @FXML
+    private ProgressBar pbCh4;
 
     @FXML
     private ImageView connectLed;
@@ -155,7 +168,6 @@ public class Controller implements Initializable {
         }
     }
 
-
     private void disconnect() {
         try {
             rxdec.stopRxDecoder();
@@ -205,6 +217,29 @@ public class Controller implements Initializable {
         serialCombo.getSelectionModel().select(0);
     }
 
+    public void updateRcBars(int[] channels) {
+
+       // if (apTabPane.getSelectionModel().getSelectedItem().getId() == "rcSetupTab") {
+
+            for (int i = 0; i < channels.length; i++) {
+                switch (i) {
+                    case 0: pbCh1.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
+                            break;
+
+                    case 1: pbCh2.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
+                            break;
+
+                    case 2: pbCh3.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
+                            break;
+
+                    case 3: pbCh4.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
+                            break;
+                }
+            }
+        //}
+
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         assert cliConsole != null : "fx:id=\"cliConsole\" was not injected: check your FMXL";
@@ -213,6 +248,7 @@ public class Controller implements Initializable {
         assert serialCombo != null : "fx:id=\"serialCombo\" was not injected: check your FMXL";
         assert connectLed != null : "fx:id=\"connectLed\" was not injected: check your FMXL";
         assert imgLogoBig != null : "fx:id=\"imgLogoBig\" was not injected: check your FMXL";
+        assert pbCh1 != null : "fx:id=\"pbCh1\" was not injected: check your FMXL";
 
         ObservableList baudRates = FXCollections.observableArrayList("9600","14400","38400","57600","115200");
         baudRateCombo.setItems(baudRates);
@@ -221,6 +257,7 @@ public class Controller implements Initializable {
         updateComPortList();
         updateButtons();
         connectLed.setImage(connectLedImageOff);
+        imgLogoBig.setImage(logoBigImage);
 
     }
 }

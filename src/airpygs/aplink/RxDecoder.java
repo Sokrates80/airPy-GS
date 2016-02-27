@@ -17,12 +17,14 @@ public class RxDecoder extends Thread {
     private boolean active;
     private boolean startByteFound;
     private int byteIndex;
+    private int rcChannelIndex;
     private RxBuffer buffer;
     private byte tmpByte;
 
     //Message Specific
     private int tmpEOF;
     private AplMessage message;
+    private int[] rcInfoMessage;
     
     //Counters
     private long validApLinkMessages;
@@ -37,8 +39,10 @@ public class RxDecoder extends Thread {
         buffer = b;
         startByteFound = false;
         byteIndex = 0;
+        rcChannelIndex = 0;
         validApLinkMessages = 0;
         lostApLinkMessages = 0;
+        rcInfoMessage = new int[ApLinkParams.AP_MESSAGE_RC_INFO_NUM_CHANNELS];
     }
 
     public void startRxDecoder(){
@@ -121,7 +125,7 @@ public class RxDecoder extends Thread {
     }
     
     private void decodeHeartBeat(){
-        if (byteIndex == 12) {
+        if (byteIndex == ApLinkParams.PAYLOAD_1ST_BYTE) {
             tmpEOF = tmpByte;
             byteIndex++;
         } else if (byteIndex == 13) {
@@ -139,20 +143,31 @@ public class RxDecoder extends Thread {
     }
 
     private void decodeRcInfo(){
-        if (byteIndex == 12) {
+        if (byteIndex == ApLinkParams.PAYLOAD_1ST_BYTE) {
             tmpEOF = tmpByte;
+            rcInfoMessage[rcChannelIndex] = (unsignedByteToInt(tmpByte));
             byteIndex++;
-        } else if ((byteIndex == 11+message.getPayloadLength()+1)) {
+        } else if ((byteIndex == ApLinkParams.HEADER_LENGTH + message.getPayloadLength())) {
 
             if (tmpByte == tmpEOF) {
+                //The whole message is valid. Update GUI progress bar value
                 validApLinkMessages++;
-                System.out.println("RcInfo Decoded -> MessageID:" + message.getMessageID() + " - QCI:" + message.getQCI() + " LastFragment:" + message.getLastFragment() + " PayloadLength: " + message.getPayloadLength());
+                apGui.updateRcBars(rcInfoMessage);
+                rcChannelIndex = 0;
+                System.out.println("RcInfo Decoded -> MessageID:" + message.getMessageID() + " - QCI:" + message.getQCI() + " LastFragment:" + message.getLastFragment() + " CH0: " + rcInfoMessage[0]);
             } else {
                 lostApLinkMessages++;
             }
             byteIndex = 0;
             startByteFound = false;
         } else {
+            // Each channel is encoded with 2 bytes.
+            if ((byteIndex - ApLinkParams.HEADER_LENGTH-1) % 2 == 0) {
+                rcInfoMessage[rcChannelIndex] = rcInfoMessage[rcChannelIndex] + (unsignedByteToInt(tmpByte)<<8);
+                rcChannelIndex++;
+            } else {
+                rcInfoMessage[rcChannelIndex] = (unsignedByteToInt(tmpByte));
+            }
             byteIndex++;
         }
     }

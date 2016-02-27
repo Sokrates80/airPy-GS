@@ -80,7 +80,7 @@
                         <Insets right="20.0" />
                      </HBox.margin></Button>
                   <Button fx:id="bRefresh" layoutX="476.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleRefreshButtonAction" text="Refresh" />
-                  <ImageView id="imgLogoBig" fitHeight="65.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView id="imgLogoBig" fx:id="imgLogoBig" fitHeight="65.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../resources/img/airPyLogo_big.png" />
                      </image>
@@ -90,9 +90,9 @@
                   </ImageView>
                </children>
             </HBox>
-            <TabPane prefHeight="292.0" prefWidth="784.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="apTabPane" prefHeight="292.0" prefWidth="784.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab fx:id="rcPanel" text="RC">
+                <Tab id="rcSetupTab" fx:id="rcPanel" text="RC Setup">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="127.0" prefWidth="784.0">
                            <children>
@@ -111,25 +111,25 @@
                                     <RowConstraints maxHeight="34.0" minHeight="10.0" prefHeight="34.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <ProgressBar id="pbCh1" prefHeight="20.0" prefWidth="151.0" progress="0.0" rotate="90.0" GridPane.rowIndex="2" />
-                                    <ProgressBar id="pbCh2" prefHeight="20.0" prefWidth="109.0" progress="0.0" rotate="90.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <ProgressBar id="pbCh3" prefHeight="20.0" prefWidth="109.0" progress="0.0" rotate="90.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                                    <ProgressBar id="pbCh4" prefHeight="20.0" prefWidth="109.0" progress="0.0" rotate="90.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                                    <ProgressBar id="pbCh5" prefHeight="20.0" prefWidth="110.0" progress="0.0" rotate="90.0" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                                    <ProgressBar fx:id="pbCh1" prefHeight="20.0" prefWidth="151.0" progress="0.0" rotate="-90.0" GridPane.rowIndex="2" />
+                                    <ProgressBar fx:id="pbCh2" prefHeight="20.0" prefWidth="109.0" progress="0.0" rotate="-90.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <ProgressBar fx:id="pbCh3" prefHeight="20.0" prefWidth="109.0" progress="0.0" rotate="-90.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                    <ProgressBar fx:id="pbCh4" prefHeight="20.0" prefWidth="109.0" progress="0.0" rotate="-90.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                                    <ProgressBar fx:id="pbCh5" prefHeight="20.0" prefWidth="110.0" progress="0.0" rotate="-90.0" GridPane.columnIndex="4" GridPane.rowIndex="2" />
                                     <Label alignment="CENTER" prefHeight="23.0" prefWidth="121.0" text="CH1">
                                        <font>
                                           <Font name="System Bold" size="18.0" />
                                        </font>
                                     </Label>
-                                    <Label id="lbCh1Max" alignment="CENTER" prefHeight="17.0" prefWidth="114.0" text="-" GridPane.rowIndex="1" />
-                                    <Label id="lbCh1Min" alignment="CENTER" prefHeight="17.0" prefWidth="123.0" text="-" GridPane.rowIndex="3" />
-                                    <Label id="lbCh2Max" alignment="CENTER" prefHeight="17.0" prefWidth="130.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label fx:id="lbCh1Max" alignment="CENTER" prefHeight="17.0" prefWidth="114.0" text="-" GridPane.rowIndex="1" />
+                                    <Label fx:id="lbCh1Min" alignment="CENTER" prefHeight="17.0" prefWidth="123.0" text="-" GridPane.rowIndex="3" />
+                                    <Label fx:id="lbCh2Max" alignment="CENTER" prefHeight="17.0" prefWidth="130.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     <Label alignment="CENTER" prefHeight="17.0" prefWidth="150.0" text="CH2" GridPane.columnIndex="1">
                                        <font>
                                           <Font name="System Bold" size="18.0" />
                                        </font>
                                     </Label>
-                                    <Label id="lbCh2Min" alignment="CENTER" prefHeight="17.0" prefWidth="137.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <Label fx:id="lbCh2Min" alignment="CENTER" prefHeight="17.0" prefWidth="137.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                     <Label alignment="CENTER" prefHeight="17.0" prefWidth="157.0" text="CH3" GridPane.columnIndex="2">
                                        <font>
                                           <Font name="System Bold" size="18.0" />
@@ -145,19 +145,19 @@
                                           <Font name="System Bold" size="18.0" />
                                        </font>
                                     </Label>
-                                    <Label id="lbCh3Max" alignment="CENTER" prefHeight="17.0" prefWidth="120.0" text="-" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                                    <Label id="lbCh4Max" alignment="CENTER" prefHeight="17.0" prefWidth="141.0" text="-" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                                    <Label id="lbCh5Max" alignment="CENTER" prefHeight="17.0" prefWidth="136.0" text="-" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                                    <Label id="lbCh3Min" alignment="CENTER" prefHeight="17.0" prefWidth="140.0" text="-" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                                    <Label id="lbCh4Min" alignment="CENTER" prefHeight="17.0" prefWidth="134.0" text="-" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-                                    <Label id="lbCh5Min" alignment="CENTER" prefHeight="17.0" prefWidth="143.0" text="-" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                                    <Label fx:id="lbCh3Max" alignment="CENTER" prefHeight="17.0" prefWidth="120.0" text="-" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                    <Label fx:id="lbCh4Max" alignment="CENTER" prefHeight="17.0" prefWidth="141.0" text="-" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                                    <Label fx:id="lbCh5Max" alignment="CENTER" prefHeight="17.0" prefWidth="136.0" text="-" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                                    <Label fx:id="lbCh3Min" alignment="CENTER" prefHeight="17.0" prefWidth="140.0" text="-" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                                    <Label fx:id="lbCh4Min" alignment="CENTER" prefHeight="17.0" prefWidth="134.0" text="-" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                                    <Label fx:id="lbCh5Min" alignment="CENTER" prefHeight="17.0" prefWidth="143.0" text="-" GridPane.columnIndex="4" GridPane.rowIndex="3" />
                                  </children>
                               </GridPane>
                               <VBox layoutX="27.0" layoutY="18.0" prefHeight="200.0" prefWidth="160.0">
                                  <children>
                                     <Label text="Receiver Type: " />
-                                    <ChoiceBox id="comboRxType" disable="true" prefHeight="27.0" prefWidth="93.0" />
-                                    <Button mnemonicParsing="false" prefHeight="69.0" prefWidth="129.0" styleClass="buttonCalibration" text="Start Calibration">
+                                    <ChoiceBox fx:id="comboRxType" disable="true" prefHeight="27.0" prefWidth="93.0" />
+                                    <Button fx:id="buttonCalibration" mnemonicParsing="false" prefHeight="69.0" prefWidth="129.0" text="Start Calibration">
                                        <VBox.margin>
                                           <Insets top="40.0" />
                                        </VBox.margin>
@@ -170,7 +170,7 @@
                            </children></AnchorPane>
                   </content>
                 </Tab>
-                <Tab fx:id="pidPanel" text="PID Tuning">
+                <Tab id="pidTuningTab" fx:id="pidPanel" text="PID Tuning">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                   </content>
