@@ -19,6 +19,7 @@ public class ApLinkParams {
     // AirPy Link Protocol messages
     public static final short AP_MESSAGE_HEARTBEAT = 10;
     public static final short AP_MESSAGE_RC_INFO = 20;
+    public static final short AP_MESSAGE_IMU_STATUS = 30;
 
     // AirPy Link Protocol general parameters
     public static double MAX_RC_VALUE = 2048.0;  //Maximum value of ab RC channel (11 Bit)

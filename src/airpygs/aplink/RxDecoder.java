@@ -92,6 +92,9 @@ public class RxDecoder extends Thread {
 
             case ApLinkParams.AP_MESSAGE_RC_INFO:     decodeRcInfo();
                                                         break;
+
+            case ApLinkParams.AP_MESSAGE_IMU_STATUS:  decodeImuStatus();
+                                                        break;
         }
     }
 
@@ -139,6 +142,36 @@ public class RxDecoder extends Thread {
             }
             byteIndex = 0;
             startByteFound = false;
+        }
+    }
+
+    private void decodeImuStatus(){
+        if (byteIndex == ApLinkParams.PAYLOAD_1ST_BYTE) {
+            tmpEOF = tmpByte;
+            //rcInfoMessage[rcChannelIndex] = (unsignedByteToInt(tmpByte));
+            byteIndex++;
+        } else if ((byteIndex == ApLinkParams.HEADER_LENGTH + message.getPayloadLength())) {
+
+            if (tmpByte == tmpEOF) {
+                //The whole message is valid. Update GUI
+                validApLinkMessages++;
+                //TODO: Update Gui
+                rcChannelIndex = 0;
+                System.out.println("ImuStatus Decoded -> MessageID:" + message.getMessageID() + " - QCI:" + message.getQCI() + " LastFragment:" + message.getLastFragment() + " PayloadLength: " + message.getPayloadLength());
+            } else {
+                lostApLinkMessages++;
+            }
+            byteIndex = 0;
+            startByteFound = false;
+        } else {
+            // Each channel is encoded with 2 bytes.
+            if ((byteIndex - ApLinkParams.HEADER_LENGTH-1) % 2 == 0) {
+                //rcInfoMessage[rcChannelIndex] = rcInfoMessage[rcChannelIndex] + (unsignedByteToInt(tmpByte)<<8);
+                //rcChannelIndex++;
+            } else {
+                //rcInfoMessage[rcChannelIndex] = (unsignedByteToInt(tmpByte));
+            }
+            byteIndex++;
         }
     }
 
