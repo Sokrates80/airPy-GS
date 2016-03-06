@@ -23,6 +23,7 @@ public class AplMessage {
         failSafe = -1;
         flightMode = -1;
         payloadLength = -1;
+        payload = new byte[ApLinkParams.PAYLOAD_MAX_LENGTH];
     }
 
     public int getMessageID() {
@@ -87,5 +88,9 @@ public class AplMessage {
 
     public void setPayload(byte[] payload) {
         this.payload = payload;
+    }
+
+    public void setPayloadByte(int byteIndex, byte b) {
+        payload[byteIndex] = b;
     }
 }

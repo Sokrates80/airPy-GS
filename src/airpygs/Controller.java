@@ -65,7 +65,19 @@ public class Controller implements Initializable {
 
 
     @FXML
+    private Label labelPitch;
+
+    @FXML
+    private Label labelRoll;
+
+    @FXML
+    private Label labelYaw;
+
+    @FXML
     private TabPane apTabPane;
+
+    @FXML
+    private Tab imuTab;
 
     @FXML
     private ProgressBar pbCh1;
@@ -145,6 +157,10 @@ public class Controller implements Initializable {
     {
         updateComPortList();
         updateButtons();
+    }
+
+    public Label getLabelPitch(){
+        return labelPitch;
     }
 
     public void setConnectLed(ConnectLed led) {
@@ -238,6 +254,13 @@ public class Controller implements Initializable {
             }
         //}
 
+    }
+
+    public void updateImuTab(float[] angles) {
+
+        labelPitch.setText(String.valueOf(angles[0]));
+        labelRoll.setText(String.valueOf(angles[1]));
+        labelYaw.setText(String.valueOf(angles[2]));
     }
 
     @Override

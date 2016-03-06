@@ -15,6 +15,7 @@ public class ApLinkParams {
     public static final short FAIL_SAFE_AND_FLIGHT_MODE = 10;
     public static final short PAYLOAD_LENGTH = 11;
     public static final short PAYLOAD_1ST_BYTE = 12;
+    public static final short PAYLOAD_MAX_LENGTH = 1500; //TODO: retrieve it dynamically
 
     // AirPy Link Protocol messages
     public static final short AP_MESSAGE_HEARTBEAT = 10;
