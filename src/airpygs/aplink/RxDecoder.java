@@ -103,6 +103,7 @@ public class RxDecoder extends Thread {
     private void loadPayload() {
         if (byteIndex == ApLinkParams.PAYLOAD_1ST_BYTE) {
 
+            //The 1st byte of the payload is used to mark the end of the frame
             tmpEOF = tmpByte;
             message.setPayloadByte(byteIndex-ApLinkParams.HEADER_LENGTH,tmpByte);
             byteIndex++;
@@ -177,6 +178,7 @@ public class RxDecoder extends Thread {
         apGui.setConnectLed(ConnectLed.TOGGLE);
     }
 
+    //Extract Pitch, Roll, Yaw angle from the payload
     private void decodeImuStatus(){
 
         for (int i = 0; i < 3; i++) {
@@ -189,11 +191,15 @@ public class RxDecoder extends Thread {
             rotations[i] = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
         }
 
-        //Update gui value
+        //Update rotation gui value
         Platform.runLater(() -> {
+            //update labels
             pitchString.set(String.valueOf(rotations[0]));
             rollString.set(String.valueOf(rotations[1]));
             yawString.set(String.valueOf(rotations[2]));
+
+            //update 3D model rotation
+            apGui.updateModelRotations(rotations);
         });
 
         //System.out.println("Pitch: " + rotations[0] + " - Roll: " + rotations[1] + " - Yaw: " + rotations[2]);

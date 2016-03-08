@@ -9,6 +9,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
+import javafx.scene.transform.Rotate;
 import javafx.stage.DirectoryChooser;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
@@ -59,10 +63,16 @@ public class Controller implements Initializable {
     Image connectLedImageHeartBeat = new Image(connectLedFileHeartBeat.toURI().toString());
     File logoBigFile = new File("./resources/img/airPyLogo_big.png");
     Image logoBigImage = new Image(logoBigFile.toURI().toString());
+    Rotate rxBox = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
+    Rotate ryBox = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
+    Rotate rzBox = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
+    PhongMaterial blueMaterial = new PhongMaterial(Color.BLUE);
 
 
     boolean toggleFlag = false;
 
+    @FXML
+    private Box imuBox;
 
     @FXML
     private Label labelPitch;
@@ -160,9 +170,11 @@ public class Controller implements Initializable {
     }
 
     public Label getLabelPitch(){
+
         return labelPitch;
     }
     public Label getLabelRoll(){
+
         return labelRoll;
     }
     public Label getLabelYaw(){
@@ -262,11 +274,15 @@ public class Controller implements Initializable {
 
     }
 
-    public void updateImuTab(float[] angles) {
 
-        labelPitch.setText(String.valueOf(angles[0]));
-        labelRoll.setText(String.valueOf(angles[1]));
-        labelYaw.setText(String.valueOf(angles[2]));
+    public void updateModelRotations(float[] angles) {
+
+        //Update the rotation of the 3D object
+        rxBox.setAngle(angles[0]);
+        ryBox.setAngle(angles[2]);
+        rzBox.setAngle(angles[1]);
+
+
     }
 
     @Override
@@ -279,14 +295,21 @@ public class Controller implements Initializable {
         assert imgLogoBig != null : "fx:id=\"imgLogoBig\" was not injected: check your FMXL";
         assert pbCh1 != null : "fx:id=\"pbCh1\" was not injected: check your FMXL";
 
+
+        //TODO: move the allowed baudrate in a property file
         ObservableList baudRates = FXCollections.observableArrayList("9600","14400","38400","57600","115200");
         baudRateCombo.setItems(baudRates);
         baudRateCombo.getSelectionModel().select(baudRates.size()-1);
-
         updateComPortList();
         updateButtons();
+
         connectLed.setImage(connectLedImageOff);
         imgLogoBig.setImage(logoBigImage);
+
+        //Initialization of 3D cube TODO: loading of custom 3d model
+        blueMaterial.setSpecularColor(Color.LIGHTBLUE);
+        imuBox.setMaterial(blueMaterial);
+        imuBox.getTransforms().addAll(rxBox, ryBox, rzBox);
 
     }
 }
