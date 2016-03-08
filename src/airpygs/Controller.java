@@ -162,6 +162,12 @@ public class Controller implements Initializable {
     public Label getLabelPitch(){
         return labelPitch;
     }
+    public Label getLabelRoll(){
+        return labelRoll;
+    }
+    public Label getLabelYaw(){
+        return labelYaw;
+    }
 
     public void setConnectLed(ConnectLed led) {
 

@@ -1,6 +1,7 @@
 package airpygs.aplink;
 
 import airpygs.Controller;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -31,6 +32,8 @@ public class RxDecoder extends Thread {
     private int[] rcInfoMessage;
     private float[] rotations;
     public StringProperty pitchString;
+    public StringProperty rollString;
+    public StringProperty yawString;
 
     //Counters
     private long validApLinkMessages;
@@ -51,7 +54,11 @@ public class RxDecoder extends Thread {
         rcInfoMessage = new int[ApLinkParams.AP_MESSAGE_RC_INFO_NUM_CHANNELS];
         rotations = new float[3];
         pitchString = new SimpleStringProperty("");
+        rollString = new SimpleStringProperty("");
+        yawString = new SimpleStringProperty("");
         apGui.getLabelPitch().textProperty().bind(pitchString);
+        apGui.getLabelRoll().textProperty().bind(rollString);
+        apGui.getLabelYaw().textProperty().bind(yawString);
     }
 
     public void startRxDecoder(){
@@ -182,9 +189,13 @@ public class RxDecoder extends Thread {
             rotations[i] = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
         }
 
-        //TODO: Update gui value
-        //apGui.updateImuTab(rotations);
-        //pitchString.set(String.valueOf(rotations[0]));
+        //Update gui value
+        Platform.runLater(() -> {
+            pitchString.set(String.valueOf(rotations[0]));
+            rollString.set(String.valueOf(rotations[1]));
+            yawString.set(String.valueOf(rotations[2]));
+        });
+
         //System.out.println("Pitch: " + rotations[0] + " - Roll: " + rotations[1] + " - Yaw: " + rotations[2]);
     }
 
