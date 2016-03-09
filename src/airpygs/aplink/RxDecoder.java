@@ -1,7 +1,12 @@
 package airpygs.aplink;
 
 import airpygs.Controller;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Properties;
 
 /**
@@ -25,7 +30,11 @@ public class RxDecoder extends Thread {
     private int tmpEOF;
     private AplMessage message;
     private int[] rcInfoMessage;
-    
+    private float[] rotations;
+    public StringProperty pitchString;
+    public StringProperty rollString;
+    public StringProperty yawString;
+
     //Counters
     private long validApLinkMessages;
     private long lostApLinkMessages;
@@ -43,6 +52,13 @@ public class RxDecoder extends Thread {
         validApLinkMessages = 0;
         lostApLinkMessages = 0;
         rcInfoMessage = new int[ApLinkParams.AP_MESSAGE_RC_INFO_NUM_CHANNELS];
+        rotations = new float[3];
+        pitchString = new SimpleStringProperty("");
+        rollString = new SimpleStringProperty("");
+        yawString = new SimpleStringProperty("");
+        apGui.getLabelPitch().textProperty().bind(pitchString);
+        apGui.getLabelRoll().textProperty().bind(rollString);
+        apGui.getLabelYaw().textProperty().bind(yawString);
     }
 
     public void startRxDecoder(){
@@ -83,7 +99,38 @@ public class RxDecoder extends Thread {
 
         byteIndex++;
     }
-    
+
+    private void loadPayload() {
+        if (byteIndex == ApLinkParams.PAYLOAD_1ST_BYTE) {
+
+            //The 1st byte of the payload is used to mark the end of the frame
+            tmpEOF = tmpByte;
+            message.setPayloadByte(byteIndex-ApLinkParams.HEADER_LENGTH,tmpByte);
+            byteIndex++;
+
+        } else if ((byteIndex == ApLinkParams.HEADER_LENGTH + message.getPayloadLength())) {
+
+            if (tmpByte == tmpEOF) {
+                //The whole message is valid. Update GUI
+                validApLinkMessages++;
+                System.out.println("Message Decoded -> MessageTypeID:" + message.getMessageTypeID() + " - QCI:" + message.getQCI() + " LastFragment:" + message.getLastFragment() + " PayloadLength: " + message.getPayloadLength());
+
+                // Decode the message
+                decodeApLinkMessage();
+
+            } else {
+                lostApLinkMessages++;
+            }
+            byteIndex = 0;
+            startByteFound = false;
+        } else {
+            // keep loading payload bytes
+            message.setPayloadByte(byteIndex-ApLinkParams.HEADER_LENGTH,tmpByte);
+            byteIndex++;
+        }
+
+    }
+
     private void decodeApLinkMessage(){
         switch (message.getMessageTypeID()) {
 
@@ -109,7 +156,7 @@ public class RxDecoder extends Thread {
                         if (byteIndex < ApLinkParams.HEADER_LENGTH) {
                             parseHeader();
                         } else {
-                            decodeApLinkMessage();
+                            loadPayload();
                         }
 
                     } else {
@@ -128,54 +175,53 @@ public class RxDecoder extends Thread {
     }
     
     private void decodeHeartBeat(){
-        if (byteIndex == ApLinkParams.PAYLOAD_1ST_BYTE) {
-            tmpEOF = tmpByte;
-            byteIndex++;
-        } else if (byteIndex == 13) {
-
-            if (tmpByte == tmpEOF) {
-                validApLinkMessages++;
-                apGui.setConnectLed(ConnectLed.TOGGLE);
-                System.out.println("Heartbeat Decoded -> MessageID:" + message.getMessageID() + " - QCI:" + message.getQCI() + " LastFragment:" + message.getLastFragment() + " PayloadLength: " + message.getPayloadLength());
-            } else {
-                lostApLinkMessages++;
-            }
-            byteIndex = 0;
-            startByteFound = false;
-        }
+        apGui.setConnectLed(ConnectLed.TOGGLE);
     }
 
+    //Extract Pitch, Roll, Yaw angle from the payload
     private void decodeImuStatus(){
-        if (byteIndex == ApLinkParams.PAYLOAD_1ST_BYTE) {
-            tmpEOF = tmpByte;
-            //rcInfoMessage[rcChannelIndex] = (unsignedByteToInt(tmpByte));
-            byteIndex++;
-        } else if ((byteIndex == ApLinkParams.HEADER_LENGTH + message.getPayloadLength())) {
 
-            if (tmpByte == tmpEOF) {
-                //The whole message is valid. Update GUI
-                validApLinkMessages++;
-                //TODO: Update Gui
-                rcChannelIndex = 0;
-                System.out.println("ImuStatus Decoded -> MessageID:" + message.getMessageID() + " - QCI:" + message.getQCI() + " LastFragment:" + message.getLastFragment() + " PayloadLength: " + message.getPayloadLength());
-            } else {
-                lostApLinkMessages++;
-            }
-            byteIndex = 0;
-            startByteFound = false;
-        } else {
-            // Each channel is encoded with 2 bytes.
-            if ((byteIndex - ApLinkParams.HEADER_LENGTH-1) % 2 == 0) {
-                //rcInfoMessage[rcChannelIndex] = rcInfoMessage[rcChannelIndex] + (unsignedByteToInt(tmpByte)<<8);
-                //rcChannelIndex++;
-            } else {
-                //rcInfoMessage[rcChannelIndex] = (unsignedByteToInt(tmpByte));
-            }
-            byteIndex++;
+        for (int i = 0; i < 3; i++) {
+            byte[] bytes = {(message.getPayload())[i * 4],
+                    (message.getPayload())[i * 4 + 1],
+                    (message.getPayload())[i * 4 + 2],
+                    (message.getPayload())[i * 4 + 3]
+            };
+
+            rotations[i] = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
         }
+
+        //Update rotation gui value
+        Platform.runLater(() -> {
+            //update labels
+            pitchString.set(String.valueOf(rotations[0]));
+            rollString.set(String.valueOf(rotations[1]));
+            yawString.set(String.valueOf(rotations[2]));
+
+            //update 3D model rotation
+            apGui.updateModelRotations(rotations);
+        });
+
+        //System.out.println("Pitch: " + rotations[0] + " - Roll: " + rotations[1] + " - Yaw: " + rotations[2]);
     }
 
     private void decodeRcInfo(){
+
+        for (int i = ApLinkParams.PAYLOAD_1ST_BYTE; i < ApLinkParams.HEADER_LENGTH + message.getPayloadLength(); i++) {
+
+            // Each channel is encoded with 2 bytes.
+            if ((i - ApLinkParams.HEADER_LENGTH-1) % 2 == 0) {
+                rcInfoMessage[rcChannelIndex] = rcInfoMessage[rcChannelIndex] + (unsignedByteToInt(tmpByte)<<8);
+                rcChannelIndex++;
+            } else {
+                rcInfoMessage[rcChannelIndex] = (unsignedByteToInt(tmpByte));
+            }
+        }
+        //System.out.println( "CH1: " + rcInfoMessage[0] + " - CH2: " + rcInfoMessage[1] + " - CH3: " + rcInfoMessage[2] + " - CH4: " + rcInfoMessage[3]);
+        apGui.updateRcBars(rcInfoMessage);
+        rcChannelIndex = 0;
+
+        /*
         if (byteIndex == ApLinkParams.PAYLOAD_1ST_BYTE) {
             tmpEOF = tmpByte;
             rcInfoMessage[rcChannelIndex] = (unsignedByteToInt(tmpByte));
@@ -202,6 +248,6 @@ public class RxDecoder extends Thread {
                 rcInfoMessage[rcChannelIndex] = (unsignedByteToInt(tmpByte));
             }
             byteIndex++;
-        }
+        }*/
     }
 }
