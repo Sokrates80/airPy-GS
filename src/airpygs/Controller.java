@@ -50,8 +50,10 @@ public class Controller implements Initializable {
 
     serialHandler cli;
     RxDecoder rxdec = null;
-    RxBuffer buffer;
+    TxEncoder txenc = null;
+    ApBuffer buffer;
     boolean cliConnected = false;
+    boolean isRxCalibrating = false;
     File airPyDestinationFolder = null;
     File airPySourceFolder = null;
     String[] serialPorts = null;
@@ -70,6 +72,9 @@ public class Controller implements Initializable {
 
 
     boolean toggleFlag = false;
+
+    @FXML
+    private Button buttonCalibration;
 
     @FXML
     private Box imuBox;
@@ -169,6 +174,20 @@ public class Controller implements Initializable {
         updateButtons();
     }
 
+    @FXML
+    private void handleCalibrationButtonAction(final ActionEvent event) {
+        if (cliConnected & !isRxCalibrating) {
+            txenc.enableMessage(ApLinkParams.AP_MESSAGE_RC_INFO);
+            buttonCalibration.setText("Stop Calibration");
+            isRxCalibrating = true;
+        } else if(cliConnected & isRxCalibrating) {
+            txenc.disableMessage(ApLinkParams.AP_MESSAGE_RC_INFO);
+            buttonCalibration.setText("Start Calibration");
+            isRxCalibrating = false;
+        }
+
+    }
+
     public Label getLabelPitch(){
 
         return labelPitch;
@@ -205,6 +224,7 @@ public class Controller implements Initializable {
     private void disconnect() {
         try {
             rxdec.stopRxDecoder();
+            txenc = null;
             cli.getSerial().closePort();
         } catch (SerialPortException e) {
             e.printStackTrace();
@@ -216,14 +236,18 @@ public class Controller implements Initializable {
 
     private void connect() {
         //cliConsole.setText("Cli Started\n\n");
-        buffer = new RxBuffer();
+        buffer = new ApBuffer();
         cli = new serialHandler(cliConsole,(String)serialCombo.getValue(),(String)baudRateCombo.getValue(),buffer);
         cliConsole.textProperty().bind(cli.readString);
         cliConnected = true;
 
+        //Initialize Rx Chain
         rxdec = new RxDecoder(buffer,this);
         rxdec.start();
         rxdec.startRxDecoder();
+
+        //Initialize Tx Chain
+        txenc = new TxEncoder(cli);
 
         connectLed.setImage(connectLedImageOn);
         updateButtons();
@@ -290,6 +314,7 @@ public class Controller implements Initializable {
         assert cliConsole != null : "fx:id=\"cliConsole\" was not injected: check your FMXL";
         assert bConnect != null : "fx:id=\"bConnect\" was not injected: check your FMXL";
         assert bUpdate != null : "fx:id=\"bUpdate\" was not injected: check your FMXL";
+        assert buttonCalibration != null: "fx:id=\"buttonCalibration\" was not injected: check your FMXL";
         assert serialCombo != null : "fx:id=\"serialCombo\" was not injected: check your FMXL";
         assert connectLed != null : "fx:id=\"connectLed\" was not injected: check your FMXL";
         assert imgLogoBig != null : "fx:id=\"imgLogoBig\" was not injected: check your FMXL";

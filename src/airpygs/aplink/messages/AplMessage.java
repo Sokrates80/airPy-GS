@@ -1,4 +1,8 @@
-package airpygs.aplink;
+package airpygs.aplink.messages;
+
+import airpygs.aplink.ApLinkParams;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by fabrizioscimia on 24/02/16.
@@ -24,6 +28,50 @@ public class AplMessage {
         flightMode = -1;
         payloadLength = -1;
         payload = new byte[ApLinkParams.PAYLOAD_MAX_LENGTH];
+    }
+
+    public AplMessage(int messageLength) {
+        messageID = -1;
+        QCI = -1;
+        lastFragment = -1;
+        messageTypeID = -1;
+        failSafe = -1;
+        flightMode = -1;
+        payloadLength = -1;
+        payload = new byte[messageLength];
+    }
+
+    public static int getRandomMessageID() {
+        return ThreadLocalRandom.current().nextInt(ApLinkParams.MESSAGE_ID_MIN, ApLinkParams.MESSAGE_ID_MAX + 1);
+    }
+
+    public byte[] getBytes() {
+        byte[] messageBytes = new byte[ApLinkParams.HEADER_LENGTH + this.getPayloadLength() + 1]; //Last Byte is EOF
+
+        //Build the Header
+
+        messageBytes[0] = (byte) ApLinkParams.START_BYTE ;
+        messageBytes[1] = (byte) (this.getMessageID() >> 8);
+        messageBytes[2] = (byte) (this.getMessageID());
+        messageBytes[3] = (byte) ((this.getLastFragment() << 4) + this.getQCI());
+        messageBytes[4] = (byte) (this.getMessageTypeID());
+        messageBytes[5] = (byte) (0);
+        messageBytes[6] = (byte) (0);
+        messageBytes[7] = (byte) (0);
+        messageBytes[8] = (byte) (0);
+        messageBytes[9] = (byte) (0);
+        messageBytes[10] = (byte) (0);
+        messageBytes[11] = (byte) (this.getPayloadLength());
+
+        //Add Payload
+        for (int i = 0; i < this.getPayloadLength(); i++) {
+            messageBytes[ApLinkParams.HEADER_LENGTH + i] = this.getPayload()[i];
+        }
+
+        //Add EOF (1st byte of the payload)
+        messageBytes[ApLinkParams.HEADER_LENGTH + this.getPayloadLength()] = this.getPayload()[0];
+
+        return  messageBytes;
     }
 
     public int getMessageID() {

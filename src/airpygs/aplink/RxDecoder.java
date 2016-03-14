@@ -1,6 +1,7 @@
 package airpygs.aplink;
 
 import airpygs.Controller;
+import airpygs.aplink.messages.AplMessage;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -23,7 +24,7 @@ public class RxDecoder extends Thread {
     private boolean startByteFound;
     private int byteIndex;
     private int rcChannelIndex;
-    private RxBuffer buffer;
+    private ApBuffer buffer;
     private byte tmpByte;
 
     //Message Specific
@@ -39,7 +40,7 @@ public class RxDecoder extends Thread {
     private long validApLinkMessages;
     private long lostApLinkMessages;
 
-    public RxDecoder(RxBuffer b, Controller gui) {
+    public RxDecoder(ApBuffer b, Controller gui) {
 
         aplinkConfig = aplinkConfigManager.getInstance().getConfig();
         message = new AplMessage();

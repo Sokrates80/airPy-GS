@@ -18,11 +18,11 @@ public class serialHandler implements SerialPortEventListener{
     private String serialPortName;
     private int baudRate;
     private byte[] tmpBytes;
-    private RxBuffer buff;
+    private ApBuffer buff;
 
     public StringProperty readString = new SimpleStringProperty("");
 
-    public serialHandler(TextArea text, String sp, String br, RxBuffer b) {
+    public serialHandler(TextArea text, String sp, String br, ApBuffer b) {
 
         console = text;
         serialPortName = sp;
@@ -61,6 +61,14 @@ public class serialHandler implements SerialPortEventListener{
 
     public SerialPort getSerial() {
         return serial;
+    }
+
+    public void writeBytes(byte[] message) {
+        try {
+            serial.writeBytes(message);
+        } catch (SerialPortException e) {
+            e.printStackTrace();
+        }
     }
 
     public void serialEvent(SerialPortEvent event) {
