@@ -53,7 +53,7 @@ public class AplMessage {
         messageBytes[0] = (byte) ApLinkParams.START_BYTE ;
         messageBytes[1] = (byte) (this.getMessageID() >> 8);
         messageBytes[2] = (byte) (this.getMessageID());
-        messageBytes[3] = (byte) ((this.getLastFragment() << 4) + this.getQCI());
+        messageBytes[3] = (byte) (this.getLastFragment() + (this.getQCI() << 3));
         messageBytes[4] = (byte) (this.getMessageTypeID());
         messageBytes[5] = (byte) (0);
         messageBytes[6] = (byte) (0);
