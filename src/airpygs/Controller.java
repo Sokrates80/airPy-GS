@@ -1,6 +1,7 @@
 package airpygs;
 
 import airpygs.aplink.*;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
@@ -69,9 +70,70 @@ public class Controller implements Initializable {
     Rotate ryBox = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
     Rotate rzBox = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
     PhongMaterial blueMaterial = new PhongMaterial(Color.BLUE);
-
-
     boolean toggleFlag = false;
+
+    //Rc Calibration Specific
+    int minValCh1 = 2047;
+    int minValCh2 = 2047;
+    int minValCh3 = 2047;
+    int minValCh4 = 2047;
+    int maxValCh1 = 0;
+    int maxValCh2 = 0;
+    int maxValCh3 = 0;
+    int maxValCh4 = 0;
+    int centerValCh1 = 1023;
+    int centerValCh2 = 1023;
+    int centerValCh3 = 1023;
+    int centerValCh4 = 1023;
+    SimpleStringProperty sMinValCh1 = new SimpleStringProperty("");
+    SimpleStringProperty sMinValCh2 = new SimpleStringProperty("");
+    SimpleStringProperty sMinValCh3 = new SimpleStringProperty("");
+    SimpleStringProperty sMinValCh4 = new SimpleStringProperty("");
+    SimpleStringProperty sCenterValCh1 = new SimpleStringProperty("");
+    SimpleStringProperty sCenterValCh2 = new SimpleStringProperty("");
+    SimpleStringProperty sCenterValCh3 = new SimpleStringProperty("");
+    SimpleStringProperty sCenterValCh4 = new SimpleStringProperty("");
+    SimpleStringProperty sMaxValCh1 = new SimpleStringProperty("");
+    SimpleStringProperty sMaxValCh2 = new SimpleStringProperty("");
+    SimpleStringProperty sMaxValCh3 = new SimpleStringProperty("");
+    SimpleStringProperty sMaxValCh4 = new SimpleStringProperty("");
+
+
+    @FXML
+    private Label lbCh1Min;
+
+    @FXML
+    private Label lbCh2Min;
+
+    @FXML
+    private Label lbCh3Min;
+
+    @FXML
+    private Label lbCh4Min;
+
+    @FXML
+    private Label lbCh1Max;
+
+    @FXML
+    private Label lbCh2Max;
+
+    @FXML
+    private Label lbCh3Max;
+
+    @FXML
+    private Label lbCh4Max;
+
+    @FXML
+    private Label lbCh1Center;
+
+    @FXML
+    private Label lbCh2Center;
+
+    @FXML
+    private Label lbCh3Center;
+
+    @FXML
+    private Label lbCh4Center;
 
     @FXML
     private Button buttonCalibration;
@@ -278,22 +340,65 @@ public class Controller implements Initializable {
     public void updateRcBars(int[] channels) {
 
        // if (apTabPane.getSelectionModel().getSelectedItem().getId() == "rcSetupTab") {
+                    for (int i = 0; i < channels.length; i++) {
+                        switch (i) {
+                            case 0:
+                                pbCh1.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
+                                if (channels[i] < minValCh1) {
+                                    minValCh1 = channels[i];
+                                }
+                                if (channels[i] > maxValCh1) {
+                                    maxValCh1 = channels[i];
+                                }
+                                centerValCh1 = channels[i];
+                                sMaxValCh1.set(String.valueOf(maxValCh1));
+                                sMinValCh1.set(String.valueOf(minValCh1));
+                                sCenterValCh1.set(String.valueOf(centerValCh1));
+                                break;
 
-            for (int i = 0; i < channels.length; i++) {
-                switch (i) {
-                    case 0: pbCh1.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
-                            break;
+                            case 1:
+                                pbCh2.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
+                                if (channels[i] < minValCh2) {
+                                    minValCh2 = channels[i];
+                                }
+                                if (channels[i] > maxValCh2) {
+                                    maxValCh2 = channels[i];
+                                }
+                                centerValCh2 = channels[i];
+                                sMaxValCh2.set(String.valueOf(maxValCh2));
+                                sMinValCh2.set(String.valueOf(minValCh2));
+                                sCenterValCh2.set(String.valueOf(centerValCh2));
+                                break;
 
-                    case 1: pbCh2.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
-                            break;
+                            case 2:
+                                pbCh3.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
+                                if (channels[i] < minValCh3) {
+                                    minValCh3 = channels[i];
+                                }
+                                if (channels[i] > maxValCh3) {
+                                    maxValCh3 = channels[i];
+                                }
+                                centerValCh3 = channels[i];
+                                sMaxValCh3.set(String.valueOf(maxValCh3));
+                                sMinValCh3.set(String.valueOf(minValCh3));
+                                sCenterValCh3.set(String.valueOf(centerValCh3));
+                                break;
 
-                    case 2: pbCh3.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
-                            break;
-
-                    case 3: pbCh4.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
-                            break;
-                }
-            }
+                            case 3:
+                                pbCh4.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
+                                if (channels[i] < minValCh4) {
+                                    minValCh4 = channels[i];
+                                }
+                                if (channels[i] > maxValCh4) {
+                                    maxValCh4 = channels[i];
+                                }
+                                centerValCh4 = channels[i];
+                                sMaxValCh4.set(String.valueOf(maxValCh4));
+                                sMinValCh4.set(String.valueOf(minValCh4));
+                                sCenterValCh4.set(String.valueOf(centerValCh4));
+                                break;
+                        }
+                    }
         //}
 
     }
@@ -336,5 +441,18 @@ public class Controller implements Initializable {
         imuBox.setMaterial(blueMaterial);
         imuBox.getTransforms().addAll(rxBox, ryBox, rzBox);
 
+        //Initialize RC labels
+        lbCh1Min.textProperty().bind(sMinValCh1);
+        lbCh2Min.textProperty().bind(sMinValCh2);
+        lbCh3Min.textProperty().bind(sMinValCh3);
+        lbCh4Min.textProperty().bind(sMinValCh4);
+        lbCh1Center.textProperty().bind(sCenterValCh1);
+        lbCh2Center.textProperty().bind(sCenterValCh2);
+        lbCh3Center.textProperty().bind(sCenterValCh3);
+        lbCh4Center.textProperty().bind(sCenterValCh4);
+        lbCh1Max.textProperty().bind(sMaxValCh1);
+        lbCh2Max.textProperty().bind(sMaxValCh2);
+        lbCh3Max.textProperty().bind(sMaxValCh3);
+        lbCh4Max.textProperty().bind(sMaxValCh4);
     }
 }
