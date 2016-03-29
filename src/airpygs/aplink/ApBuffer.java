@@ -5,11 +5,11 @@ import java.util.ArrayList;
 /**
  * Created by fabrizioscimia on 16/02/16.
  */
-public class RxBuffer {
+public class ApBuffer {
 
     private ArrayList<Byte> buffer;
 
-    public RxBuffer(){
+    public ApBuffer(){
         buffer = new ArrayList<Byte>();
     }
 

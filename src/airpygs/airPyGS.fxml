@@ -151,13 +151,18 @@
                                     <Label fx:id="lbCh3Min" alignment="CENTER" prefHeight="17.0" prefWidth="140.0" text="-" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                                     <Label fx:id="lbCh4Min" alignment="CENTER" prefHeight="17.0" prefWidth="134.0" text="-" GridPane.columnIndex="3" GridPane.rowIndex="3" />
                                     <Label fx:id="lbCh5Min" alignment="CENTER" prefHeight="17.0" prefWidth="143.0" text="-" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                                    <Label fx:id="lbCh1Center" alignment="CENTER" prefHeight="17.0" prefWidth="44.0" text="-" textAlignment="CENTER" GridPane.rowIndex="2" />
+                                    <Label fx:id="lbCh2Center" alignment="CENTER" prefHeight="17.0" prefWidth="44.0" text="-" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label fx:id="lbCh3Center" alignment="CENTER" prefHeight="17.0" prefWidth="44.0" text="-" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                    <Label fx:id="lbCh4Center" alignment="CENTER" prefHeight="17.0" prefWidth="44.0" text="-" textAlignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                                    <Label fx:id="lbCh5Center" alignment="CENTER" prefHeight="17.0" prefWidth="44.0" text="-" textAlignment="CENTER" GridPane.columnIndex="4" GridPane.rowIndex="2" />
                                  </children>
                               </GridPane>
                               <VBox layoutX="27.0" layoutY="18.0" prefHeight="200.0" prefWidth="160.0">
                                  <children>
                                     <Label text="Receiver Type: " />
                                     <ChoiceBox fx:id="comboRxType" disable="true" prefHeight="27.0" prefWidth="93.0" />
-                                    <Button fx:id="buttonCalibration" mnemonicParsing="false" prefHeight="69.0" prefWidth="129.0" text="Start Calibration">
+                                    <Button fx:id="buttonCalibration" mnemonicParsing="false" onAction="#handleCalibrationButtonAction" prefHeight="69.0" prefWidth="129.0" text="Start Calibration">
                                        <VBox.margin>
                                           <Insets top="40.0" />
                                        </VBox.margin>
