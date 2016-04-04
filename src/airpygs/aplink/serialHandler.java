@@ -78,9 +78,7 @@ public class serialHandler implements SerialPortEventListener{
                 //Read data, if 10 bytes available
                 try {
                     tmpBytes = serial.readBytes();
-
                     buff.addToRxBuffer(tmpBytes);
-                    //readString.set(tmpString);
                     //System.out.println(HexBin.encode(tmpBytes));
                 }
                 catch (SerialPortException ex) {

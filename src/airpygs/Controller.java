@@ -55,6 +55,7 @@ public class Controller implements Initializable {
     ApBuffer buffer;
     boolean cliConnected = false;
     boolean isRxCalibrating = false;
+    boolean isImuCalibrating = false;
     File airPyDestinationFolder = null;
     File airPySourceFolder = null;
     String[] serialPorts = null;
@@ -98,6 +99,9 @@ public class Controller implements Initializable {
     SimpleStringProperty sMaxValCh3 = new SimpleStringProperty("");
     SimpleStringProperty sMaxValCh4 = new SimpleStringProperty("");
 
+
+    @FXML
+    private Button buttonImu;
 
     @FXML
     private Label lbCh1Min;
@@ -246,6 +250,21 @@ public class Controller implements Initializable {
             txenc.disableMessage(ApLinkParams.AP_MESSAGE_RC_INFO);
             buttonCalibration.setText("Start Calibration");
             isRxCalibrating = false;
+        }
+
+    }
+
+    @FXML
+    private void handleImuButtonAction(final ActionEvent event) {
+
+        if (cliConnected & !isImuCalibrating) {
+            txenc.enableMessage(ApLinkParams.AP_MESSAGE_IMU_STATUS);
+            buttonImu.setText("Stop IMU Calibration");
+            isImuCalibrating = true;
+        } else if(cliConnected & isImuCalibrating) {
+            txenc.disableMessage(ApLinkParams.AP_MESSAGE_IMU_STATUS);
+            buttonImu.setText("Start IMU Calibration");
+            isImuCalibrating = false;
         }
 
     }
