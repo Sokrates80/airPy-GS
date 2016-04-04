@@ -26,6 +26,7 @@ public class ApLinkParams {
     public static final short AP_MESSAGE_IMU_STATUS = 30;
     public static final short AP_MESSAGE_ENABLE_MESSAGE = 40;
     public static final short AP_MESSAGE_DISABLE_MESSAGE = 50;
+    public static final short AP_MESSAGE_ENABLE_ESC_CALIBRATION = 60;
 
     // AirPy Link Protocol general parameters
     public static double MAX_RC_VALUE = 2047.0;  //Maximum value of ab RC channel (11 Bit)

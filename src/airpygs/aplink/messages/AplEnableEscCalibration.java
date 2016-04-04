@@ -3,13 +3,13 @@ package airpygs.aplink.messages;
 import airpygs.aplink.ApLinkParams;
 
 /**
- * Created by fabrizioscimia on 04/04/16.
+ * Created by fabrizioscimia on 05/04/16.
  */
-public class AplEnableMessage extends AplMessage {
+public class AplEnableEscCalibration extends AplMessage {
 
-    public AplEnableMessage(int msgTypeId) {
+    public AplEnableEscCalibration() {
         super(2); // encoding msgTypeId as Short will result in 2 bytes payload
-        this.setMessageTypeID(ApLinkParams.AP_MESSAGE_ENABLE_MESSAGE);
+        this.setMessageTypeID(ApLinkParams.AP_MESSAGE_ENABLE_ESC_CALIBRATION);
         this.setMessageID(AplMessage.getRandomMessageID());
         this.setQCI(0);
         this.setFailSafe(0);
@@ -18,8 +18,7 @@ public class AplEnableMessage extends AplMessage {
         this.setLastFragment(ApLinkParams.LAST_FRAGMENT_YES);
 
         //Set Payload
-        this.setPayloadByte(0,(byte) (msgTypeId));
+        this.setPayloadByte(0,(byte) (255));
 
     }
-
 }

@@ -101,6 +101,9 @@ public class Controller implements Initializable {
 
 
     @FXML
+    private Button buttonEscCalibration;
+
+    @FXML
     private Button buttonImu;
 
     @FXML
@@ -248,7 +251,7 @@ public class Controller implements Initializable {
             isRxCalibrating = true;
         } else if(cliConnected & isRxCalibrating) {
             txenc.disableMessage(ApLinkParams.AP_MESSAGE_RC_INFO);
-            buttonCalibration.setText("Start Calibration");
+            buttonCalibration.setText("Rx Calibration");
             isRxCalibrating = false;
         }
 
@@ -265,6 +268,14 @@ public class Controller implements Initializable {
             txenc.disableMessage(ApLinkParams.AP_MESSAGE_IMU_STATUS);
             buttonImu.setText("Start IMU Calibration");
             isImuCalibrating = false;
+        }
+
+    }
+
+    @FXML
+    private void handleEnableEscCalibrationAction(final ActionEvent event) {
+        if (cliConnected & !isRxCalibrating) {
+            txenc.enableEscCalibration();
         }
 
     }
