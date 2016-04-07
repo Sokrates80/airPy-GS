@@ -14,7 +14,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("airPyGS.fxml"));
         primaryStage.setTitle("airPy Ground Station");
         primaryStage.setScene(new Scene(root, 900, 500));
-        primaryStage.getIcons().add(new Image("file:resources/img/airpy_logo.png"));
+        //primaryStage.getIcons().add(new Image("file:resources/img/airpy_logo.png"));
         primaryStage.show();
     }
 

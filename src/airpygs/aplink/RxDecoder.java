@@ -32,6 +32,7 @@ public class RxDecoder extends Thread {
     private AplMessage message;
     private int[] rcInfoMessage;
     private float[] rotations;
+    private short[] motors;
     public StringProperty pitchString;
     public StringProperty rollString;
     public StringProperty yawString;
@@ -54,6 +55,7 @@ public class RxDecoder extends Thread {
         lostApLinkMessages = 0;
         rcInfoMessage = new int[ApLinkParams.AP_MESSAGE_RC_INFO_NUM_CHANNELS];
         rotations = new float[3];
+        motors = new short[4];
         pitchString = new SimpleStringProperty("");
         rollString = new SimpleStringProperty("");
         yawString = new SimpleStringProperty("");
@@ -192,6 +194,14 @@ public class RxDecoder extends Thread {
             rotations[i] = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
         }
 
+        for (int i = 0; i < 4; i++) {
+            byte[] bytes_mot = {(message.getPayload())[i * 2 + 12],
+                                (message.getPayload())[i * 2 + 13]
+            };
+
+            motors[i] = ByteBuffer.wrap(bytes_mot).order(ByteOrder.LITTLE_ENDIAN).getShort();
+        }
+
         //Update rotation gui value
         Platform.runLater(() -> {
             //update labels
@@ -201,6 +211,10 @@ public class RxDecoder extends Thread {
 
             //update 3D model rotation
             apGui.updateModelRotations(rotations);
+
+            //Update Charts
+            apGui.updateAttitudeChart(rotations);
+            apGui.updateMotorChart(motors);
         });
 
     }
