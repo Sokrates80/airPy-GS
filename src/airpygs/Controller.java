@@ -115,7 +115,7 @@ public class Controller implements Initializable {
     private Sphere ledIndicator;
 
     @FXML
-    private Button buttonEscCalibration, buttonImu, buttonCalibration, bConnect, bUpdate;
+    private Button buttonEscCalibration, buttonImu, buttonCalibration, bConnect, bUpdate, buttonSavePIDs;
 
     @FXML
     private Label lbCh1Min, lbCh2Min, lbCh3Min, lbCh4Min, lbCh5Min;
@@ -145,6 +145,9 @@ public class Controller implements Initializable {
     private TextArea cliConsole;
 
     @FXML
+    private TextField txtKp, txtKd, txtKi, txtMaxIncrement;
+
+    @FXML
     private ChoiceBox serialCombo, baudRateCombo;
 
     @FXML
@@ -152,6 +155,22 @@ public class Controller implements Initializable {
 
     @FXML
     private CheckBox checkBoxMotor1, checkBoxMotor2, checkBoxMotor3, checkBoxMotor4;
+
+    @FXML
+    private void handleButtonSavePIDs(final  ActionEvent event) {
+        float[] pids = {Float.parseFloat(txtKp.getText()),
+                        Float.parseFloat(txtKd.getText()),
+                        Float.parseFloat(txtKi.getText()),
+                        Float.parseFloat(txtMaxIncrement.getText())
+        };
+
+
+        txenc.savePidSettings(pids);
+
+        /*for (int i= 0; i < pids.length; i++) {
+            System.out.println(pids[i]);
+        }*/
+    }
 
     @FXML
     private void handleSetSourceAction(final ActionEvent event)
