@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.shape.*?>
@@ -276,7 +277,7 @@
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <LineChart fx:id="chartMotors" layoutX="404.0" layoutY="57.0" prefHeight="242.0" prefWidth="366.0" stylesheets="@chartMotors.css">
+                              <LineChart fx:id="chartMotors" layoutX="404.0" layoutY="70.0" prefHeight="242.0" prefWidth="366.0" stylesheets="@chartMotors.css">
                                 <xAxis>
                                   <NumberAxis side="BOTTOM" />
                                 </xAxis>
@@ -284,7 +285,7 @@
                                   <NumberAxis side="LEFT" />
                                 </yAxis>
                               </LineChart>
-                              <LineChart fx:id="chartAttitude" layoutX="21.0" layoutY="58.0" prefHeight="241.0" prefWidth="345.0" stylesheets="@chartAttitude.css">
+                              <LineChart fx:id="chartAttitude" layoutX="29.0" layoutY="71.0" prefHeight="241.0" prefWidth="345.0" stylesheets="@chartAttitude.css">
                                 <xAxis>
                                   <NumberAxis side="BOTTOM" />
                                 </xAxis>
@@ -292,12 +293,47 @@
                                   <NumberAxis side="LEFT" />
                                 </yAxis>
                               </LineChart>
-                              <CheckBox fx:id="checkBoxPitch" layoutX="108.0" layoutY="32.0" mnemonicParsing="false" onAction="#handleCheckBoxPitch" selected="true" text="Pitch angle" />
-                              <CheckBox fx:id="checkBoxRoll" layoutX="234.0" layoutY="32.0" mnemonicParsing="false" onAction="#handleCheckBoxRoll" selected="true" text="Roll angle" />
-                              <CheckBox fx:id="checkBoxMotor3" layoutX="501.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor3" selected="true" text="Motor 3" />
-                              <CheckBox fx:id="checkBoxMotor2" layoutX="501.0" layoutY="41.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor2" selected="true" text="Motor 2" />
-                              <CheckBox fx:id="checkBoxMotor1" layoutX="622.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor1" selected="true" text="Motor 1" />
-                              <CheckBox fx:id="checkBoxMotor4" layoutX="622.0" layoutY="41.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor4" selected="true" text="Motor 4" />
+                              <CheckBox fx:id="checkBoxPitch" layoutX="109.0" layoutY="61.0" mnemonicParsing="false" onAction="#handleCheckBoxPitch" selected="true" text="Pitch angle" />
+                              <CheckBox fx:id="checkBoxRoll" layoutX="235.0" layoutY="61.0" mnemonicParsing="false" onAction="#handleCheckBoxRoll" selected="true" text="Roll angle" />
+                              <CheckBox fx:id="checkBoxMotor3" layoutX="502.0" layoutY="32.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor3" selected="true" text="Motor 3" />
+                              <CheckBox fx:id="checkBoxMotor2" layoutX="502.0" layoutY="61.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor2" selected="true" text="Motor 2" />
+                              <CheckBox fx:id="checkBoxMotor1" layoutX="622.0" layoutY="32.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor1" selected="true" text="Motor 1" />
+                              <CheckBox fx:id="checkBoxMotor4" layoutX="621.0" layoutY="62.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor4" selected="true" text="Motor 4" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" height="43.0" layoutX="21.0" layoutY="11.0" stroke="#aeaeae" strokeType="INSIDE" width="447.0">
+                                 <fill>
+                                    <LinearGradient endX="1.0" endY="1.0" startY="0.009615384615384581">
+                                       <stops>
+                                          <Stop color="#dddddd" />
+                                          <Stop color="WHITE" offset="1.0" />
+                                       </stops>
+                                    </LinearGradient>
+                                 </fill>
+                              </Rectangle>
+                              <Button fx:id="buttonSavePIDs" layoutX="392.0" layoutY="19.0" mnemonicParsing="false" onAction="#handleButtonSavePIDs" prefHeight="27.0" prefWidth="60.0" text="Save" />
+                              <TextField fx:id="txtKp" layoutX="45.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
+                              <Label layoutX="29.0" layoutY="24.0" text="Kp">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="91.0" layoutY="24.0" text="Kd">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="156.0" layoutY="24.0" text="Ki">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="txtKd" layoutX="109.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
+                              <TextField fx:id="txtKi" layoutX="169.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
+                              <TextField fx:id="txtMaxIncrement" layoutX="334.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
+                              <Label layoutX="221.0" layoutY="24.0" text="Max Increment %">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Label>
                            </children>
                         </AnchorPane>
                     </content>

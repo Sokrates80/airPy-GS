@@ -3,6 +3,7 @@ package airpygs.aplink;
 import airpygs.aplink.messages.AplDisableMessage;
 import airpygs.aplink.messages.AplEnableMessage;
 import airpygs.aplink.messages.AplEnableEscCalibration;
+import airpygs.aplink.messages.AplSavePIDs;
 
 /**
  * Created by fabrizioscimia on 13/03/16.
@@ -28,5 +29,10 @@ public class TxEncoder {
     public void enableEscCalibration() {
         serial.writeBytes((new AplEnableEscCalibration().getBytes()));
         System.out.println("Sent Enable Esc Calbration Request");
+    }
+
+    public void savePidSettings(float[] pids) {
+        serial.writeBytes((new AplSavePIDs(pids)).getBytes());
+        System.out.println("Sent Save PIDs Request");
     }
 }

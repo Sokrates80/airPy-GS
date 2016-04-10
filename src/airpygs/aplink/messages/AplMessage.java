@@ -2,6 +2,7 @@ package airpygs.aplink.messages;
 
 import airpygs.aplink.ApLinkParams;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -43,6 +44,20 @@ public class AplMessage {
 
     public static int getRandomMessageID() {
         return ThreadLocalRandom.current().nextInt(ApLinkParams.MESSAGE_ID_MIN, ApLinkParams.MESSAGE_ID_MAX + 1);
+    }
+
+    public static String bytesToHex(byte[] in) {
+        final StringBuilder builder = new StringBuilder();
+        for(byte b : in) {
+            builder.append(String.format("%02x", b));
+        }
+        return builder.toString();
+    }
+
+    public static byte[] toByteArray(float value) {
+        byte[] bytes = new byte[4];
+        ByteBuffer.wrap(bytes).putFloat(value);
+        return bytes;
     }
 
     public byte[] getBytes() {
