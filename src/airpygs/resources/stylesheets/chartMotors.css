@@ -1,0 +1,35 @@
+.series0 {
+   -fx-background-color: #344e73, white;
+   -fx-stroke: #344e73;
+   -fx-stroke-width: 2px;
+ }
+
+.series1 {
+   -fx-background-color: #20f039, white;
+   -fx-stroke: #20f039;
+   -fx-stroke-width: 2px;
+ }
+
+.series2 {
+    -fx-background-color: #ffa500, white;
+    -fx-stroke: #ffa500;
+    -fx-stroke-width: 2px;
+ }
+
+.series3 {
+    -fx-background-color: #cd5b45, white;
+    -fx-stroke: #cd5b45;
+    -fx-stroke-width: 2px;
+ }
+
+.chart-line-symbol {
+    -fx-background-color: null, null;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 2px;
+    -fx-padding: 2px;
+}
+
+.default-color0.chart-line-symbol { -fx-background-color: #344e73, #ffa07a; }
+.default-color1.chart-line-symbol { -fx-background-color: #20f039, #ffa07a; }
+.default-color2.chart-line-symbol { -fx-background-color: #ffa500, #ffa07a; }
+.default-color3.chart-line-symbol { -fx-background-color: #cd5b45, #ffa07a; }
