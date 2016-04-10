@@ -7,12 +7,17 @@ import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.Axis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.DirectoryChooser;
 import jssc.SerialPortException;
@@ -59,19 +64,22 @@ public class Controller implements Initializable {
     File airPyDestinationFolder = null;
     File airPySourceFolder = null;
     String[] serialPorts = null;
-    File connectLedFileOn = new File("./resources/img/switch_on.png");
-    Image connectLedImageOn = new Image(connectLedFileOn.toURI().toString());
-    File connectLedFileOff = new File("./resources/img/switch_off.png");
-    Image connectLedImageOff = new Image(connectLedFileOff.toURI().toString());
-    File connectLedFileHeartBeat = new File("./resources/img/switch_heartbeat.png");
-    Image connectLedImageHeartBeat = new Image(connectLedFileHeartBeat.toURI().toString());
-    File logoBigFile = new File("./resources/img/airPyLogo_big.png");
-    Image logoBigImage = new Image(logoBigFile.toURI().toString());
     Rotate rxBox = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
     Rotate ryBox = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
     Rotate rzBox = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
     PhongMaterial blueMaterial = new PhongMaterial(Color.BLUE);
+    PhongMaterial redMaterial = new PhongMaterial(Color.RED);
+    PhongMaterial greenMaterial = new PhongMaterial(Color.GREEN);
+    PhongMaterial grayMaterial = new PhongMaterial(Color.GRAY);
     boolean toggleFlag = false;
+    XYChart.Series pitchSeries;
+    XYChart.Series rollSeries;
+    XYChart.Series motor1Series;
+    XYChart.Series motor2Series;
+    XYChart.Series motor3Series;
+    XYChart.Series motor4Series;
+    int xAxisDefault = 50;
+    int xAxisSamplesCount = 0;
 
     //Rc Calibration Specific
     int minValCh1 = 2047;
@@ -101,61 +109,28 @@ public class Controller implements Initializable {
 
 
     @FXML
-    private Button buttonEscCalibration;
+    private LineChart chartAttitude, chartMotors;
 
     @FXML
-    private Button buttonImu;
+    private Sphere ledIndicator;
 
     @FXML
-    private Label lbCh1Min;
+    private Button buttonEscCalibration, buttonImu, buttonCalibration, bConnect, bUpdate;
 
     @FXML
-    private Label lbCh2Min;
+    private Label lbCh1Min, lbCh2Min, lbCh3Min, lbCh4Min, lbCh5Min;
 
     @FXML
-    private Label lbCh3Min;
+    private Label lbCh1Max, lbCh2Max, lbCh3Max, lbCh4Max, lbCh5Max;
 
     @FXML
-    private Label lbCh4Min;
-
-    @FXML
-    private Label lbCh1Max;
-
-    @FXML
-    private Label lbCh2Max;
-
-    @FXML
-    private Label lbCh3Max;
-
-    @FXML
-    private Label lbCh4Max;
-
-    @FXML
-    private Label lbCh1Center;
-
-    @FXML
-    private Label lbCh2Center;
-
-    @FXML
-    private Label lbCh3Center;
-
-    @FXML
-    private Label lbCh4Center;
-
-    @FXML
-    private Button buttonCalibration;
+    private Label lbCh1Center, lbCh2Center, lbCh3Center, lbCh4Center, lbCh5Center;
 
     @FXML
     private Box imuBox;
 
     @FXML
-    private Label labelPitch;
-
-    @FXML
-    private Label labelRoll;
-
-    @FXML
-    private Label labelYaw;
+    private Label labelPitch, labelRoll, labelYaw;
 
     @FXML
     private TabPane apTabPane;
@@ -164,36 +139,19 @@ public class Controller implements Initializable {
     private Tab imuTab;
 
     @FXML
-    private ProgressBar pbCh1;
-
-    @FXML
-    private ProgressBar pbCh2;
-
-    @FXML
-    private ProgressBar pbCh3;
-
-    @FXML
-    private ProgressBar pbCh4;
-
-    @FXML
-    private ImageView connectLed;
-
-    @FXML
-    private ImageView imgLogoBig;
+    private ProgressBar pbCh1, pbCh2, pbCh3, pbCh4, pbCh5;
 
     @FXML
     private TextArea cliConsole;
 
     @FXML
-    private Button bConnect;
+    private ChoiceBox serialCombo, baudRateCombo;
 
     @FXML
-    private Button bUpdate;
-    @FXML
-    private ChoiceBox serialCombo;
+    private CheckBox checkBoxPitch, checkBoxRoll;
 
     @FXML
-    private ChoiceBox baudRateCombo;
+    private CheckBox checkBoxMotor1, checkBoxMotor2, checkBoxMotor3, checkBoxMotor4;
 
     @FXML
     private void handleSetSourceAction(final ActionEvent event)
@@ -280,6 +238,49 @@ public class Controller implements Initializable {
 
     }
 
+    @FXML
+    private void handleCheckBoxPitch(final ActionEvent event) {
+
+        /*if (!checkBoxPitch.isSelected()) {
+
+            chartAttitude.getData().remove(0);
+            checkBoxPitch.setSelected(false);
+
+        } else {
+
+            chartAttitude.getData().add(0,pitchSeries);
+            checkBoxPitch.setSelected(true);
+
+        }*/
+
+        System.out.println("Checbox Pitch:" + checkBoxPitch.isSelected());
+    }
+
+    @FXML
+    private void handleCheckBoxRoll(final ActionEvent event) {
+
+    }
+
+    @FXML
+    private void handleCheckBoxMotor1(final ActionEvent event) {
+
+    }
+
+    @FXML
+    private void handleCheckBoxMotor2(final ActionEvent event) {
+
+    }
+
+    @FXML
+    private void handleCheckBoxMotor3(final ActionEvent event) {
+
+    }
+
+    @FXML
+    private void handleCheckBoxMotor4(final ActionEvent event) {
+
+    }
+
     public Label getLabelPitch(){
 
         return labelPitch;
@@ -296,17 +297,19 @@ public class Controller implements Initializable {
 
         switch (led) {
 
-            case ON:        connectLed.setImage(connectLedImageOn);
-                break;
+            case ON:        ledIndicator.setMaterial(greenMaterial);
+                            break;
 
-            case OFF:       connectLed.setImage(connectLedImageOff);
-                break;
+            case OFF:       //ledIndicator.setMaterial(redMaterial);
+                            ledIndicator.setMaterial(grayMaterial);
+                            break;
 
             case TOGGLE:    if (toggleFlag) {
-                connectLed.setImage(connectLedImageOn);
+                ledIndicator.setMaterial(greenMaterial);
                 toggleFlag = false;
             } else {
-                connectLed.setImage(connectLedImageHeartBeat);
+                //ledIndicator.setMaterial(redMaterial);
+                ledIndicator.setMaterial(grayMaterial);
                 toggleFlag = true;
             }
                 break;
@@ -322,7 +325,8 @@ public class Controller implements Initializable {
             e.printStackTrace();
         }
         cliConnected = false;
-        connectLed.setImage(connectLedImageOff);
+        //ledIndicator.setMaterial(redMaterial);
+        ledIndicator.setMaterial(grayMaterial);
         updateButtons();
     }
 
@@ -341,7 +345,7 @@ public class Controller implements Initializable {
         //Initialize Tx Chain
         txenc = new TxEncoder(cli);
 
-        connectLed.setImage(connectLedImageOn);
+        ledIndicator.setMaterial(greenMaterial);
         updateButtons();
     }
 
@@ -444,6 +448,59 @@ public class Controller implements Initializable {
 
     }
 
+    public void updateAttitudeChart(float[] angles) {
+
+        if (xAxisSamplesCount > 100) {
+
+            //pitchSeries.getData().remove(0);
+            //rollSeries.getData().remove(0);
+
+            NumberAxis xAxis = (NumberAxis) chartAttitude.getXAxis();
+            xAxis.setForceZeroInRange(false);
+            xAxis.setAutoRanging(false);
+            xAxis.setLowerBound(xAxisSamplesCount - 100);
+            xAxis.setUpperBound(xAxisSamplesCount);
+
+        }
+
+        if (checkBoxPitch.isSelected()) {
+            pitchSeries.getData().add(new XYChart.Data(xAxisSamplesCount, angles[0]));
+        }
+
+        if (checkBoxRoll.isSelected()) {
+            rollSeries.getData().add(new XYChart.Data(xAxisSamplesCount, angles[1]));
+        }
+
+    }
+
+    public void updateMotorChart(short[] motors) {
+        if (xAxisSamplesCount > 100) {
+
+
+            NumberAxis xAxis = (NumberAxis) chartMotors.getXAxis();
+            xAxis.setForceZeroInRange(false);
+            xAxis.setAutoRanging(false);
+            xAxis.setLowerBound(xAxisSamplesCount - 100);
+            xAxis.setUpperBound(xAxisSamplesCount);
+
+        }
+
+        if (checkBoxMotor1.isSelected()) {
+            motor1Series.getData().add(new XYChart.Data(xAxisSamplesCount, motors[0]));
+        }
+        if (checkBoxMotor2.isSelected()) {
+            motor2Series.getData().add(new XYChart.Data(xAxisSamplesCount, motors[1]));
+        }
+        if (checkBoxMotor3.isSelected()) {
+            motor3Series.getData().add(new XYChart.Data(xAxisSamplesCount, motors[2]));
+        }
+        if (checkBoxMotor4.isSelected()) {
+            motor4Series.getData().add(new XYChart.Data(xAxisSamplesCount, motors[3]));
+        }
+        //TODO: Move in a static class variable related to the chart
+        xAxisSamplesCount++;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         assert cliConsole != null : "fx:id=\"cliConsole\" was not injected: check your FMXL";
@@ -451,8 +508,6 @@ public class Controller implements Initializable {
         assert bUpdate != null : "fx:id=\"bUpdate\" was not injected: check your FMXL";
         assert buttonCalibration != null: "fx:id=\"buttonCalibration\" was not injected: check your FMXL";
         assert serialCombo != null : "fx:id=\"serialCombo\" was not injected: check your FMXL";
-        assert connectLed != null : "fx:id=\"connectLed\" was not injected: check your FMXL";
-        assert imgLogoBig != null : "fx:id=\"imgLogoBig\" was not injected: check your FMXL";
         assert pbCh1 != null : "fx:id=\"pbCh1\" was not injected: check your FMXL";
 
 
@@ -463,13 +518,17 @@ public class Controller implements Initializable {
         updateComPortList();
         updateButtons();
 
-        connectLed.setImage(connectLedImageOff);
-        imgLogoBig.setImage(logoBigImage);
-
         //Initialization of 3D cube TODO: loading of custom 3d model
         blueMaterial.setSpecularColor(Color.LIGHTBLUE);
         imuBox.setMaterial(blueMaterial);
         imuBox.getTransforms().addAll(rxBox, ryBox, rzBox);
+
+        //Initialization of 3D sphere
+        redMaterial.setSpecularColor(Color.LIGHTCORAL);
+        //ledIndicator.setMaterial(redMaterial);
+        ledIndicator.setMaterial(grayMaterial);
+        greenMaterial.setSpecularColor(Color.LIGHTGREEN);
+        grayMaterial.setSpecularColor(Color.LIGHTGRAY);
 
         //Initialize RC labels
         lbCh1Min.textProperty().bind(sMinValCh1);
@@ -484,5 +543,43 @@ public class Controller implements Initializable {
         lbCh2Max.textProperty().bind(sMaxValCh2);
         lbCh3Max.textProperty().bind(sMaxValCh3);
         lbCh4Max.textProperty().bind(sMaxValCh4);
+
+        //Initialize Charts
+        pitchSeries = new XYChart.Series();
+        pitchSeries.setName("Pitch angle");
+        rollSeries = new XYChart.Series();
+        rollSeries.setName("Roll angle");
+        motor1Series = new XYChart.Series();
+        motor1Series.setName("Motor 1");
+        motor2Series = new XYChart.Series();
+        motor2Series.setName("Motor 2");
+        motor3Series = new XYChart.Series();
+        motor3Series.setName("Motor 3");
+        motor4Series = new XYChart.Series();
+        motor4Series.setName("Motor 4");
+
+
+        //populating the all the series with default data
+        /*for (int i = 0; i < xAxisDefault; i++){
+            pitchSeries.getData().add(new XYChart.Data(i, 0));
+            rollSeries.getData().add(new XYChart.Data(i, 0));
+            motor1Series.getData().add(new XYChart.Data(i, 0));
+            motor2Series.getData().add(new XYChart.Data(i, 0));
+            motor3Series.getData().add(new XYChart.Data(i, 0));
+            motor4Series.getData().add(new XYChart.Data(i, 0));
+
+        }*/
+
+        chartAttitude.getData().add(pitchSeries);
+        chartAttitude.getData().add(rollSeries);
+        chartMotors.getData().add(motor1Series);
+        chartMotors.getData().add(motor2Series);
+        chartMotors.getData().add(motor3Series);
+        chartMotors.getData().add(motor4Series);
+
+        checkBoxPitch.setSelected(true);
+
+
+
     }
 }
