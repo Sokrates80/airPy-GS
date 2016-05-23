@@ -4,6 +4,8 @@ import airpygs.aplink.messages.AplDisableMessage;
 import airpygs.aplink.messages.AplEnableMessage;
 import airpygs.aplink.messages.AplEnableEscCalibration;
 import airpygs.aplink.messages.AplSavePIDs;
+import airpygs.aplink.messages.AplGyroCalibration;
+import airpygs.aplink.messages.AplLoadPIDs;
 
 /**
  * Created by fabrizioscimia on 13/03/16.
@@ -31,8 +33,25 @@ public class TxEncoder {
         System.out.println("Sent Enable Esc Calbration Request");
     }
 
+    public void getCurrentPIDs() {
+        serial.writeBytes((new AplLoadPIDs().getBytes()));
+        System.out.println("Sent Current PID Settings Request");
+    }
+
     public void savePidSettings(float[] pids) {
         serial.writeBytes((new AplSavePIDs(pids)).getBytes());
         System.out.println("Sent Save PIDs Request");
     }
+
+    public void gyroCalibration(int option) {
+        serial.writeBytes((new AplGyroCalibration(option)).getBytes());
+        if (option == AplGyroCalibration.START_CALIBRATION) {
+            System.out.println("Sent Giro Calibration Start Request");
+        }
+
+        if (option == AplGyroCalibration.STOP_CALIBRATION) {
+            System.out.println("Sent Giro Calibration Stop Request");
+        }
+    }
+
 }

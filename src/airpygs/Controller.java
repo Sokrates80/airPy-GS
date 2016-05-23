@@ -1,6 +1,8 @@
 package airpygs;
 
 import airpygs.aplink.*;
+import airpygs.aplink.messages.AplGyroCalibration;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -61,6 +63,7 @@ public class Controller implements Initializable {
     boolean cliConnected = false;
     boolean isRxCalibrating = false;
     boolean isImuCalibrating = false;
+    boolean isGyroCalibrating = false;
     File airPyDestinationFolder = null;
     File airPySourceFolder = null;
     String[] serialPorts = null;
@@ -74,6 +77,8 @@ public class Controller implements Initializable {
     boolean toggleFlag = false;
     XYChart.Series pitchSeries;
     XYChart.Series rollSeries;
+    XYChart.Series pitchVelSeries;
+    XYChart.Series rollVelSeries;
     XYChart.Series motor1Series;
     XYChart.Series motor2Series;
     XYChart.Series motor3Series;
@@ -115,7 +120,7 @@ public class Controller implements Initializable {
     private Sphere ledIndicator;
 
     @FXML
-    private Button buttonEscCalibration, buttonImu, buttonCalibration, bConnect, bUpdate, buttonSavePIDs;
+    private Button buttonEscCalibration, buttonImu, buttonGyro, buttonCalibration, bConnect, bUpdate, buttonSavePIDs, buttonLoadPIDs;
 
     @FXML
     private Label lbCh1Min, lbCh2Min, lbCh3Min, lbCh4Min, lbCh5Min;
@@ -130,7 +135,7 @@ public class Controller implements Initializable {
     private Box imuBox;
 
     @FXML
-    private Label labelPitch, labelRoll, labelYaw;
+    private Label labelPitch, labelRoll, labelYaw, labelGpitch, labelGroll, labelGyaw;
 
     @FXML
     private TabPane apTabPane;
@@ -145,13 +150,13 @@ public class Controller implements Initializable {
     private TextArea cliConsole;
 
     @FXML
-    private TextField txtKp, txtKd, txtKi, txtMaxIncrement;
+    private TextField txtKp, txtKd, txtKi, txtMaxIncrement, txtGyroKp, txtGyroKd, txtGyroKi, txtGyroMaxIncrement;
 
     @FXML
     private ChoiceBox serialCombo, baudRateCombo;
 
     @FXML
-    private CheckBox checkBoxPitch, checkBoxRoll;
+    private CheckBox checkBoxPitch, checkBoxPitchVel, checkBoxRoll, checkBoxRollVel;
 
     @FXML
     private CheckBox checkBoxMotor1, checkBoxMotor2, checkBoxMotor3, checkBoxMotor4;
@@ -161,7 +166,11 @@ public class Controller implements Initializable {
         float[] pids = {Float.parseFloat(txtKp.getText()),
                         Float.parseFloat(txtKd.getText()),
                         Float.parseFloat(txtKi.getText()),
-                        Float.parseFloat(txtMaxIncrement.getText())
+                        Float.parseFloat(txtMaxIncrement.getText()),
+                        Float.parseFloat(txtGyroKp.getText()),
+                        Float.parseFloat(txtGyroKd.getText()),
+                        Float.parseFloat(txtGyroKi.getText()),
+                        Float.parseFloat(txtGyroMaxIncrement.getText())
         };
 
 
@@ -170,6 +179,13 @@ public class Controller implements Initializable {
         /*for (int i= 0; i < pids.length; i++) {
             System.out.println(pids[i]);
         }*/
+    }
+
+    @FXML
+    private void handleButtonLoadPIDs(final  ActionEvent event) {
+        if (cliConnected & !isRxCalibrating) {
+            txenc.getCurrentPIDs();
+        }
     }
 
     @FXML
@@ -239,14 +255,27 @@ public class Controller implements Initializable {
 
         if (cliConnected & !isImuCalibrating) {
             txenc.enableMessage(ApLinkParams.AP_MESSAGE_IMU_STATUS);
-            buttonImu.setText("Stop IMU Calibration");
+            buttonImu.setText("Stop IMU Streaming");
             isImuCalibrating = true;
         } else if(cliConnected & isImuCalibrating) {
             txenc.disableMessage(ApLinkParams.AP_MESSAGE_IMU_STATUS);
-            buttonImu.setText("Start IMU Calibration");
+            buttonImu.setText("Start IMU Streaming");
             isImuCalibrating = false;
         }
 
+    }
+
+    @FXML
+    private void handleGyroButtonAction(final ActionEvent event) {
+        if (cliConnected & !isGyroCalibrating) {
+            txenc.gyroCalibration(AplGyroCalibration.START_CALIBRATION);
+            buttonGyro.setText("Stop Gyro Calibration");
+            isGyroCalibrating = true;
+        } else if(cliConnected & isGyroCalibrating) {
+            txenc.gyroCalibration(AplGyroCalibration.STOP_CALIBRATION);
+            buttonGyro.setText("Start Gyro Calibration");
+            isGyroCalibrating = false;
+        }
     }
 
     @FXML
@@ -260,19 +289,6 @@ public class Controller implements Initializable {
     @FXML
     private void handleCheckBoxPitch(final ActionEvent event) {
 
-        /*if (!checkBoxPitch.isSelected()) {
-
-            chartAttitude.getData().remove(0);
-            checkBoxPitch.setSelected(false);
-
-        } else {
-
-            chartAttitude.getData().add(0,pitchSeries);
-            checkBoxPitch.setSelected(true);
-
-        }*/
-
-        System.out.println("Checbox Pitch:" + checkBoxPitch.isSelected());
     }
 
     @FXML
@@ -309,7 +325,35 @@ public class Controller implements Initializable {
         return labelRoll;
     }
     public Label getLabelYaw(){
+
         return labelYaw;
+    }
+
+    public Label getLabelGPitch(){
+
+        return labelGpitch;
+    }
+
+    public Label getLabelGRoll(){
+
+        return labelGroll;
+    }
+
+    public Label getLabelGYaw(){
+
+        return labelGyaw;
+    }
+
+    public void updatePIDTextBox(float[] pids){
+
+        txtKp.setText(Float.toString(pids[0]));
+        txtKd.setText(Float.toString(pids[1]));
+        txtKi.setText(Float.toString(pids[2]));
+        txtMaxIncrement.setText(Float.toString(pids[3]));
+        txtGyroKp.setText(Float.toString(pids[4]));
+        txtGyroKd.setText(Float.toString(pids[5]));
+        txtGyroKi.setText(Float.toString(pids[6]));
+        txtGyroMaxIncrement.setText(Float.toString(pids[7]));
     }
 
     public void setConnectLed(ConnectLed led) {
@@ -490,10 +534,18 @@ public class Controller implements Initializable {
             rollSeries.getData().add(new XYChart.Data(xAxisSamplesCount, angles[1]));
         }
 
+        if (checkBoxPitchVel.isSelected()) {
+            pitchVelSeries.getData().add(new XYChart.Data(xAxisSamplesCount, angles[3]));
+        }
+
+        if (checkBoxRollVel.isSelected()) {
+            rollVelSeries.getData().add(new XYChart.Data(xAxisSamplesCount, angles[4]));
+        }
+
     }
 
     public void updateMotorChart(short[] motors) {
-        if (xAxisSamplesCount > 100) {
+        if (xAxisSamplesCount >= 100) {
 
 
             NumberAxis xAxis = (NumberAxis) chartMotors.getXAxis();
@@ -506,6 +558,7 @@ public class Controller implements Initializable {
 
         if (checkBoxMotor1.isSelected()) {
             motor1Series.getData().add(new XYChart.Data(xAxisSamplesCount, motors[0]));
+
         }
         if (checkBoxMotor2.isSelected()) {
             motor2Series.getData().add(new XYChart.Data(xAxisSamplesCount, motors[1]));
@@ -568,6 +621,10 @@ public class Controller implements Initializable {
         pitchSeries.setName("Pitch angle");
         rollSeries = new XYChart.Series();
         rollSeries.setName("Roll angle");
+        pitchVelSeries = new XYChart.Series();
+        pitchVelSeries.setName("Pitch Vel");
+        rollVelSeries = new XYChart.Series();
+        rollVelSeries.setName("Roll Vel");
         motor1Series = new XYChart.Series();
         motor1Series.setName("Motor 1");
         motor2Series = new XYChart.Series();
@@ -578,23 +635,16 @@ public class Controller implements Initializable {
         motor4Series.setName("Motor 4");
 
 
-        //populating the all the series with default data
-        /*for (int i = 0; i < xAxisDefault; i++){
-            pitchSeries.getData().add(new XYChart.Data(i, 0));
-            rollSeries.getData().add(new XYChart.Data(i, 0));
-            motor1Series.getData().add(new XYChart.Data(i, 0));
-            motor2Series.getData().add(new XYChart.Data(i, 0));
-            motor3Series.getData().add(new XYChart.Data(i, 0));
-            motor4Series.getData().add(new XYChart.Data(i, 0));
-
-        }*/
-
         chartAttitude.getData().add(pitchSeries);
         chartAttitude.getData().add(rollSeries);
+        chartAttitude.getData().add(pitchVelSeries);
+        chartAttitude.getData().add(rollVelSeries);
         chartMotors.getData().add(motor1Series);
         chartMotors.getData().add(motor2Series);
         chartMotors.getData().add(motor3Series);
         chartMotors.getData().add(motor4Series);
+        chartAttitude.setAnimated(true);
+        chartMotors.setAnimated(true);
 
         checkBoxPitch.setSelected(true);
 
