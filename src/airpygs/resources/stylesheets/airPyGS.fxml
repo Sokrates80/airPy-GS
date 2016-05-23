@@ -26,7 +26,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="548.0" prefWidth="784.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="airpygs.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="612.0" prefWidth="784.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="airpygs.Controller">
    <top>
       <MenuBar fx:id="menuBar" prefHeight="18.0" prefWidth="614.0" BorderPane.alignment="CENTER">
         <menus>
@@ -51,7 +51,7 @@
       </MenuBar>
    </top>
    <bottom>
-      <TextArea fx:id="cliConsole" prefHeight="80.0" prefWidth="782.0" BorderPane.alignment="CENTER" />
+      <TextArea fx:id="cliConsole" prefHeight="0.0" prefWidth="784.0" BorderPane.alignment="CENTER" />
    </bottom>
    <center>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
@@ -118,7 +118,7 @@
                   </GridPane>
                </children>
             </HBox>
-            <TabPane fx:id="apTabPane" prefHeight="353.0" prefWidth="784.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="apTabPane" prefHeight="398.0" prefWidth="784.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab id="rcSetupTab" fx:id="rcPanel" text="RC Setup">
                   <content>
@@ -214,12 +214,13 @@
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="299.0" prefWidth="784.0">
                            <children>
-                              <SplitPane dividerPositions="0.5270618556701031" layoutX="4.0" prefHeight="321.0" prefWidth="778.0">
+                              <SplitPane dividerPositions="0.5270618556701031" layoutX="4.0" prefHeight="370.0" prefWidth="778.0">
                                 <items>
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="318.0" prefWidth="405.0">
                                        <children>
                                           <GridPane layoutX="-2.0" layoutY="122.0" prefHeight="110.0" prefWidth="409.0">
                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -227,41 +228,68 @@
                                             <rowConstraints>
                                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                             </rowConstraints>
                                              <children>
-                                                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="65.0" prefWidth="137.0" text="Pitch" textAlignment="CENTER">
+                                                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="65.0" prefWidth="137.0" text="Pitch" textAlignment="CENTER" GridPane.columnIndex="1">
                                                    <font>
                                                       <Font name="System Bold" size="18.0" />
                                                    </font>
                                                 </Label>
-                                                <Label alignment="CENTER" prefHeight="84.0" prefWidth="136.0" text="Roll" GridPane.columnIndex="1">
+                                                <Label alignment="CENTER" prefHeight="84.0" prefWidth="136.0" text="Roll" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="System Italic" size="18.0" />
                                                    </font>
                                                 </Label>
-                                                <Label alignment="CENTER" prefHeight="70.0" prefWidth="136.0" text="Yaw" GridPane.columnIndex="2">
+                                                <Label alignment="CENTER" prefHeight="70.0" prefWidth="136.0" text="Yaw" GridPane.columnIndex="3">
                                                    <font>
                                                       <Font name="System Bold" size="18.0" />
                                                    </font>
                                                 </Label>
-                                                <Label fx:id="labelPitch" alignment="CENTER" prefHeight="17.0" prefWidth="152.0" text="-" GridPane.rowIndex="1">
+                                                <Label fx:id="labelPitch" alignment="CENTER" prefHeight="17.0" prefWidth="152.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                    <font>
                                                       <Font size="18.0" />
                                                    </font>
                                                 </Label>
-                                                <Label fx:id="labelRoll" alignment="CENTER" prefHeight="17.0" prefWidth="189.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                <Label fx:id="labelRoll" alignment="CENTER" prefHeight="17.0" prefWidth="189.0" text="-" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                                    <font>
                                                       <Font size="18.0" />
                                                    </font>
                                                 </Label>
-                                                <Label fx:id="labelYaw" alignment="CENTER" prefHeight="17.0" prefWidth="158.0" text="-" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                <Label fx:id="labelYaw" alignment="CENTER" prefHeight="17.0" prefWidth="158.0" text="-" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="75.0" text="angle" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                                                   <font>
+                                                      <Font name="System Bold Italic" size="13.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label alignment="CENTER" prefHeight="17.0" prefWidth="75.0" text="velocity" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+                                                   <font>
+                                                      <Font name="System Bold" size="13.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label fx:id="labelGpitch" alignment="CENTER" prefHeight="17.0" prefWidth="152.0" text="-" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label fx:id="labelGroll" alignment="CENTER" prefHeight="17.0" prefWidth="152.0" text="-" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label fx:id="labelGyaw" alignment="CENTER" prefHeight="17.0" prefWidth="152.0" text="-" textAlignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="2">
                                                    <font>
                                                       <Font size="18.0" />
                                                    </font>
                                                 </Label>
                                              </children>
                                           </GridPane>
-                                          <Button fx:id="buttonImu" alignment="CENTER" contentDisplay="CENTER" layoutX="131.0" layoutY="48.0" mnemonicParsing="false" onAction="#handleImuButtonAction" prefHeight="44.0" prefWidth="143.0" text="Start Calibration" textAlignment="CENTER" />
+                                          <Button fx:id="buttonImu" alignment="CENTER" contentDisplay="CENTER" layoutX="123.0" layoutY="48.0" mnemonicParsing="false" onAction="#handleImuButtonAction" prefHeight="44.0" prefWidth="159.0" text="Start IMU Streaming" textAlignment="CENTER" />
+                                          <Button fx:id="buttonGyro" layoutX="123.0" layoutY="261.0" mnemonicParsing="false" onAction="#handleGyroButtonAction" prefHeight="44.0" prefWidth="159.0" text="Start Gyro Calibration" />
                                        </children>
                                     </AnchorPane>
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="314.0" prefWidth="363.0">
@@ -275,31 +303,37 @@
                 </Tab>
                   <Tab text="PID">
                     <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="367.0" prefWidth="784.0">
                            <children>
-                              <LineChart fx:id="chartMotors" layoutX="404.0" layoutY="70.0" prefHeight="242.0" prefWidth="366.0" stylesheets="@chartMotors.css">
+                              <LineChart fx:id="chartMotors" layoutX="404.0" layoutY="110.0" prefHeight="242.0" prefWidth="366.0" stylesheets="@chartMotors.css">
                                 <xAxis>
-                                  <NumberAxis side="BOTTOM" />
+                                  <NumberAxis side="BOTTOM">
+                                       <tickLabelFont>
+                                          <Font size="6.0" />
+                                       </tickLabelFont></NumberAxis>
                                 </xAxis>
                                 <yAxis>
                                   <NumberAxis side="LEFT" />
                                 </yAxis>
                               </LineChart>
-                              <LineChart fx:id="chartAttitude" layoutX="29.0" layoutY="71.0" prefHeight="241.0" prefWidth="345.0" stylesheets="@chartAttitude.css">
+                              <LineChart fx:id="chartAttitude" layoutX="36.0" layoutY="111.0" prefHeight="241.0" prefWidth="345.0" stylesheets="@chartAttitude.css">
                                 <xAxis>
-                                  <NumberAxis side="BOTTOM" />
+                                  <NumberAxis side="BOTTOM">
+                                       <tickLabelFont>
+                                          <Font size="6.0" />
+                                       </tickLabelFont></NumberAxis>
                                 </xAxis>
                                 <yAxis>
                                   <NumberAxis side="LEFT" />
                                 </yAxis>
                               </LineChart>
-                              <CheckBox fx:id="checkBoxPitch" layoutX="109.0" layoutY="61.0" mnemonicParsing="false" onAction="#handleCheckBoxPitch" selected="true" text="Pitch angle" />
-                              <CheckBox fx:id="checkBoxRoll" layoutX="235.0" layoutY="61.0" mnemonicParsing="false" onAction="#handleCheckBoxRoll" selected="true" text="Roll angle" />
-                              <CheckBox fx:id="checkBoxMotor3" layoutX="502.0" layoutY="32.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor3" selected="true" text="Motor 3" />
-                              <CheckBox fx:id="checkBoxMotor2" layoutX="502.0" layoutY="61.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor2" selected="true" text="Motor 2" />
+                              <CheckBox fx:id="checkBoxPitch" layoutX="29.0" layoutY="101.0" mnemonicParsing="false" onAction="#handleCheckBoxPitch" selected="true" text="Pitch angle" />
+                              <CheckBox fx:id="checkBoxRoll" layoutX="221.0" layoutY="101.0" mnemonicParsing="false" onAction="#handleCheckBoxRoll" selected="true" text="Roll angle" />
+                              <CheckBox fx:id="checkBoxMotor3" layoutX="523.0" layoutY="32.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor3" selected="true" text="Motor 3" />
+                              <CheckBox fx:id="checkBoxMotor2" layoutX="524.0" layoutY="62.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor2" selected="true" text="Motor 2" />
                               <CheckBox fx:id="checkBoxMotor1" layoutX="622.0" layoutY="32.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor1" selected="true" text="Motor 1" />
                               <CheckBox fx:id="checkBoxMotor4" layoutX="621.0" layoutY="62.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor4" selected="true" text="Motor 4" />
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" height="43.0" layoutX="21.0" layoutY="11.0" stroke="#aeaeae" strokeType="INSIDE" width="447.0">
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" height="80.0" layoutX="11.0" layoutY="11.0" stroke="#aeaeae" strokeType="INSIDE" width="489.0">
                                  <fill>
                                     <LinearGradient endX="1.0" endY="1.0" startY="0.009615384615384581">
                                        <stops>
@@ -309,31 +343,60 @@
                                     </LinearGradient>
                                  </fill>
                               </Rectangle>
-                              <Button fx:id="buttonSavePIDs" layoutX="392.0" layoutY="19.0" mnemonicParsing="false" onAction="#handleButtonSavePIDs" prefHeight="27.0" prefWidth="60.0" text="Save" />
-                              <TextField fx:id="txtKp" layoutX="45.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
-                              <Label layoutX="29.0" layoutY="24.0" text="Kp">
+                              <Button fx:id="buttonSavePIDs" layoutX="433.0" layoutY="49.0" mnemonicParsing="false" onAction="#handleButtonSavePIDs" prefHeight="27.0" prefWidth="60.0" text="Save" />
+                              <TextField fx:id="txtKp" layoutX="122.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
+                              <Label layoutX="97.0" layoutY="24.0" text="Kp">
                                  <font>
                                     <Font name="System Bold" size="13.0" />
                                  </font>
                               </Label>
-                              <Label layoutX="91.0" layoutY="24.0" text="Kd">
+                              <Label layoutX="170.0" layoutY="24.0" text="Kd">
                                  <font>
                                     <Font name="System Bold" size="13.0" />
                                  </font>
                               </Label>
-                              <Label layoutX="156.0" layoutY="24.0" text="Ki">
+                              <Label layoutX="243.0" layoutY="24.0" text="Ki">
                                  <font>
                                     <Font name="System Bold" size="13.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="txtKd" layoutX="109.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
-                              <TextField fx:id="txtKi" layoutX="169.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
-                              <TextField fx:id="txtMaxIncrement" layoutX="334.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
-                              <Label layoutX="221.0" layoutY="24.0" text="Max Increment %">
+                              <TextField fx:id="txtKd" layoutX="194.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
+                              <TextField fx:id="txtKi" layoutX="263.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
+                              <TextField fx:id="txtMaxIncrement" layoutX="379.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
+                              <Label layoutX="314.0" layoutY="24.0" text="Max Incr.">
                                  <font>
                                     <Font name="System Bold" size="13.0" />
                                  </font>
                               </Label>
+                              <CheckBox fx:id="checkBoxPitchVel" layoutX="131.0" layoutY="101.0" mnemonicParsing="false" selected="true" text="Pitch vel" />
+                              <CheckBox fx:id="checkBoxRollVel" layoutX="310.0" layoutY="101.0" mnemonicParsing="false" selected="true" text="Roll vel" />
+                              <Label layoutX="14.0" layoutY="24.0" text="Stabilization" textFill="#181be8" />
+                              <Label layoutX="314.0" layoutY="54.0" text="Max Incr.">
+                                 <font>
+                                    <Font name="System Bold Italic" size="13.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="97.0" layoutY="54.0" text="Kp">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="37.0" layoutY="54.0" text="Gyro" textFill="#181be8" />
+                              <Label layoutX="170.0" layoutY="54.0" text="Kd">
+                                 <font>
+                                    <Font name="System Bold Italic" size="13.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="243.0" layoutY="54.0" text="Ki">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="txtGyroKp" layoutX="122.0" layoutY="49.0" prefHeight="27.0" prefWidth="40.0" />
+                              <TextField fx:id="txtGyroKd" layoutX="194.0" layoutY="49.0" prefHeight="27.0" prefWidth="40.0" />
+                              <TextField fx:id="txtGyroKi" layoutX="263.0" layoutY="49.0" prefHeight="27.0" prefWidth="40.0" />
+                              <TextField fx:id="txtGyroMaxIncrement" layoutX="379.0" layoutY="49.0" prefHeight="27.0" prefWidth="40.0" />
+                              <Button fx:id="buttonLoadPIDs" layoutX="433.0" layoutY="19.0" mnemonicParsing="false" onAction="#handleButtonLoadPIDs" prefHeight="27.0" prefWidth="60.0" text="Load" />
                            </children>
                         </AnchorPane>
                     </content>

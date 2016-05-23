@@ -32,10 +32,14 @@ public class RxDecoder extends Thread {
     private AplMessage message;
     private int[] rcInfoMessage;
     private float[] rotations;
+    private float[] pidSettings;
     private short[] motors;
     public StringProperty pitchString;
     public StringProperty rollString;
     public StringProperty yawString;
+    public StringProperty gxString;
+    public StringProperty gyString;
+    public StringProperty gzString;
 
     //Counters
     private long validApLinkMessages;
@@ -54,14 +58,21 @@ public class RxDecoder extends Thread {
         validApLinkMessages = 0;
         lostApLinkMessages = 0;
         rcInfoMessage = new int[ApLinkParams.AP_MESSAGE_RC_INFO_NUM_CHANNELS];
-        rotations = new float[3];
+        rotations = new float[6];
+        pidSettings = new float[8];
         motors = new short[4];
         pitchString = new SimpleStringProperty("");
         rollString = new SimpleStringProperty("");
         yawString = new SimpleStringProperty("");
+        gxString = new SimpleStringProperty("");
+        gyString = new SimpleStringProperty("");
+        gzString = new SimpleStringProperty("");
         apGui.getLabelPitch().textProperty().bind(pitchString);
         apGui.getLabelRoll().textProperty().bind(rollString);
         apGui.getLabelYaw().textProperty().bind(yawString);
+        apGui.getLabelGPitch().textProperty().bind(gxString);
+        apGui.getLabelGRoll().textProperty().bind(gyString);
+        apGui.getLabelGYaw().textProperty().bind(gzString);
     }
 
     public void startRxDecoder(){
@@ -145,6 +156,9 @@ public class RxDecoder extends Thread {
 
             case ApLinkParams.AP_MESSAGE_IMU_STATUS:  decodeImuStatus();
                                                         break;
+
+            case ApLinkParams.AP_MESSAGE_PID_SETTINGS: decodePIDSettings();
+                                                        break;
         }
     }
 
@@ -176,7 +190,21 @@ public class RxDecoder extends Thread {
             }
 
     }
-    
+
+    private void decodePIDSettings(){
+        for (int i = 0; i < 8; i++) {
+            byte[] bytes = {(message.getPayload())[i * 4],
+                    (message.getPayload())[i * 4 + 1],
+                    (message.getPayload())[i * 4 + 2],
+                    (message.getPayload())[i * 4 + 3]
+            };
+
+            pidSettings[i] = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+        }
+
+        apGui.updatePIDTextBox(pidSettings);
+    }
+
     private void decodeHeartBeat(){
         apGui.setConnectLed(ConnectLed.TOGGLE);
     }
@@ -184,7 +212,7 @@ public class RxDecoder extends Thread {
     //Extract Pitch, Roll, Yaw angle from the payload
     private void decodeImuStatus(){
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 6; i++) {
             byte[] bytes = {(message.getPayload())[i * 4],
                     (message.getPayload())[i * 4 + 1],
                     (message.getPayload())[i * 4 + 2],
@@ -195,8 +223,8 @@ public class RxDecoder extends Thread {
         }
 
         for (int i = 0; i < 4; i++) {
-            byte[] bytes_mot = {(message.getPayload())[i * 2 + 12],
-                                (message.getPayload())[i * 2 + 13]
+            byte[] bytes_mot = {(message.getPayload())[i * 2 + 24],
+                                (message.getPayload())[i * 2 + 25]
             };
 
             motors[i] = ByteBuffer.wrap(bytes_mot).order(ByteOrder.LITTLE_ENDIAN).getShort();
@@ -208,6 +236,9 @@ public class RxDecoder extends Thread {
             pitchString.set(String.valueOf(rotations[0]));
             rollString.set(String.valueOf(rotations[1]));
             yawString.set(String.valueOf(rotations[2]));
+            gxString.set(String.valueOf(rotations[3]));
+            gyString.set(String.valueOf(rotations[4]));
+            gzString.set(String.valueOf(rotations[5]));
 
             //update 3D model rotation
             apGui.updateModelRotations(rotations);
