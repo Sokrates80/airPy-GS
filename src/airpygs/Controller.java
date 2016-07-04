@@ -2,6 +2,9 @@ package airpygs;
 
 import airpygs.aplink.*;
 import airpygs.aplink.messages.AplGyroCalibration;
+import airpygs.aplink.messages.TxThresholds;
+import airpygs.graphics.Xform;
+import airpygs.utils.ApConfigManager;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -61,7 +64,7 @@ public class Controller implements Initializable {
     TxEncoder txenc = null;
     ApBuffer buffer;
     boolean cliConnected = false;
-    boolean isRxCalibrating = false;
+    int isRxCalibrating = 0;
     boolean isImuCalibrating = false;
     boolean isGyroCalibrating = false;
     File airPyDestinationFolder = null;
@@ -70,6 +73,11 @@ public class Controller implements Initializable {
     Rotate rxBox = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
     Rotate ryBox = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
     Rotate rzBox = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
+    private static final double AXIS_LENGTH = 250.0;
+    final Xform axisGroup = new Xform();;
+    final Box xAxis = new Box(AXIS_LENGTH, 1, 1);
+    final Box yAxis = new Box(1, AXIS_LENGTH, 1);
+    final Box zAxis = new Box(1, 1, AXIS_LENGTH);
     PhongMaterial blueMaterial = new PhongMaterial(Color.BLUE);
     PhongMaterial redMaterial = new PhongMaterial(Color.RED);
     PhongMaterial greenMaterial = new PhongMaterial(Color.GREEN);
@@ -91,27 +99,35 @@ public class Controller implements Initializable {
     int minValCh2 = 2047;
     int minValCh3 = 2047;
     int minValCh4 = 2047;
+    int minValCh5 = 2047;
     int maxValCh1 = 0;
     int maxValCh2 = 0;
     int maxValCh3 = 0;
     int maxValCh4 = 0;
+    int maxValCh5 = 0;
     int centerValCh1 = 1023;
     int centerValCh2 = 1023;
     int centerValCh3 = 1023;
     int centerValCh4 = 1023;
+    int centerValCh5 = 1023;
     SimpleStringProperty sMinValCh1 = new SimpleStringProperty("");
     SimpleStringProperty sMinValCh2 = new SimpleStringProperty("");
     SimpleStringProperty sMinValCh3 = new SimpleStringProperty("");
     SimpleStringProperty sMinValCh4 = new SimpleStringProperty("");
+    SimpleStringProperty sMinValCh5 = new SimpleStringProperty("");
     SimpleStringProperty sCenterValCh1 = new SimpleStringProperty("");
     SimpleStringProperty sCenterValCh2 = new SimpleStringProperty("");
     SimpleStringProperty sCenterValCh3 = new SimpleStringProperty("");
     SimpleStringProperty sCenterValCh4 = new SimpleStringProperty("");
+    SimpleStringProperty sCenterValCh5 = new SimpleStringProperty("");
     SimpleStringProperty sMaxValCh1 = new SimpleStringProperty("");
     SimpleStringProperty sMaxValCh2 = new SimpleStringProperty("");
     SimpleStringProperty sMaxValCh3 = new SimpleStringProperty("");
     SimpleStringProperty sMaxValCh4 = new SimpleStringProperty("");
+    SimpleStringProperty sMaxValCh5 = new SimpleStringProperty("");
 
+    //Load config.json
+    ApConfigManager config = ApConfigManager.getInstance();
 
     @FXML
     private LineChart chartAttitude, chartMotors;
@@ -173,17 +189,13 @@ public class Controller implements Initializable {
                         Float.parseFloat(txtGyroMaxIncrement.getText())
         };
 
-
+        //Send the infos through ApLink
         txenc.savePidSettings(pids);
-
-        /*for (int i= 0; i < pids.length; i++) {
-            System.out.println(pids[i]);
-        }*/
     }
 
     @FXML
     private void handleButtonLoadPIDs(final  ActionEvent event) {
-        if (cliConnected & !isRxCalibrating) {
+        if (cliConnected & isRxCalibrating == 0) {
             txenc.getCurrentPIDs();
         }
     }
@@ -238,14 +250,55 @@ public class Controller implements Initializable {
 
     @FXML
     private void handleCalibrationButtonAction(final ActionEvent event) {
-        if (cliConnected & !isRxCalibrating) {
+        if (cliConnected & isRxCalibrating == 0) {
             txenc.enableMessage(ApLinkParams.AP_MESSAGE_RC_INFO);
-            buttonCalibration.setText("Stop Calibration");
-            isRxCalibrating = true;
-        } else if(cliConnected & isRxCalibrating) {
+            buttonCalibration.setText("Done");
+            isRxCalibrating = 1;
+
+            Alert txCalibAlert = new Alert(Alert.AlertType.INFORMATION);
+            txCalibAlert.setTitle("Tx Calibration - Step 1 of 2");
+            txCalibAlert.setHeaderText(null);
+            txCalibAlert.setContentText("Move all the stick in the max and min position then click ok. \n\n" +
+                    "Press Done when finished");
+            txCalibAlert.showAndWait();
+
+        } else if(cliConnected & isRxCalibrating == 1) {
+            buttonCalibration.setText("Done");
+            isRxCalibrating = 2;
+
+            //Save Min and Max values TODO: Load dynamically the values in an array based on the config,json num_channels
+
+            int[] minTxChValues = {minValCh1, minValCh2, minValCh3, minValCh4};
+            txenc.saveTxRxSettings(TxThresholds.MIN, minTxChValues);
+
+            int[] maxTxChValues = {maxValCh1, maxValCh2, maxValCh3, maxValCh4};
+            txenc.saveTxRxSettings(TxThresholds.MAX, maxTxChValues);
+
+            //Show next step dialog box
+            Alert txCalibAlert = new Alert(Alert.AlertType.INFORMATION);
+            txCalibAlert.setTitle("Tx Calibration - Step 2 of 2");
+            txCalibAlert.setHeaderText(null);
+            txCalibAlert.setContentText("Leave all the stick in the center position and the throttle to 0. \n\n" +
+                    "Press Done when finished");
+            txCalibAlert.showAndWait();
+
+        } else if(cliConnected & isRxCalibrating == 2) {
             txenc.disableMessage(ApLinkParams.AP_MESSAGE_RC_INFO);
-            buttonCalibration.setText("Rx Calibration");
-            isRxCalibrating = false;
+            isRxCalibrating = 0;
+
+            //Save Center values TODO: Load dynamically the values in an array based on the config,json num_channels
+
+            int[] centerTxChValues = {centerValCh1, centerValCh2, centerValCh3, centerValCh4};
+            txenc.saveTxRxSettings(TxThresholds.CENTER, centerTxChValues);
+
+            Alert txCalibAlert = new Alert(Alert.AlertType.INFORMATION);
+            txCalibAlert.setTitle("Tx Calibration Completed");
+            txCalibAlert.setHeaderText(null);
+            txCalibAlert.setContentText("Tx Calibration Completed. \n\n" +
+                    "MIN/MAX/CENTER values have been stored to airPy");
+            txCalibAlert.showAndWait();
+
+            buttonCalibration.setText("Start Tx Calibration");
         }
 
     }
@@ -280,9 +333,19 @@ public class Controller implements Initializable {
 
     @FXML
     private void handleEnableEscCalibrationAction(final ActionEvent event) {
-        if (cliConnected & !isRxCalibrating) {
+        if (cliConnected & isRxCalibrating == 0) {
             txenc.enableEscCalibration();
         }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Esc Calibration Mode");
+        alert.setHeaderText(null);
+        alert.setContentText("ESC Calibration mode Enabled! \n\n" +
+                "after power cycling the airPy controller the throttle channel will be set in pass-through mode in " +
+                "order to perform the calibration.\n" +
+                "After the calibration is completed, a second power cycle will disable the Esc calibration mode");
+
+        alert.showAndWait();
 
     }
 
@@ -391,6 +454,13 @@ public class Controller implements Initializable {
         //ledIndicator.setMaterial(redMaterial);
         ledIndicator.setMaterial(grayMaterial);
         updateButtons();
+
+        //Disable buttons:
+        buttonCalibration.setDisable(true);
+        buttonImu.setDisable(true);
+        buttonEscCalibration.setDisable(true);
+        buttonLoadPIDs.setDisable(true);
+        buttonSavePIDs.setDisable(true);
     }
 
     private void connect() {
@@ -410,6 +480,13 @@ public class Controller implements Initializable {
 
         ledIndicator.setMaterial(greenMaterial);
         updateButtons();
+
+        //Enable buttons:
+        buttonCalibration.setDisable(false);
+        buttonImu.setDisable(false);
+        buttonEscCalibration.setDisable(false);
+        buttonLoadPIDs.setDisable(false);
+        buttonSavePIDs.setDisable(false);
     }
 
     private void updateButtons() {
@@ -436,7 +513,6 @@ public class Controller implements Initializable {
 
     public void updateRcBars(int[] channels) {
 
-       // if (apTabPane.getSelectionModel().getSelectedItem().getId() == "rcSetupTab") {
                     for (int i = 0; i < channels.length; i++) {
                         switch (i) {
                             case 0:
@@ -494,9 +570,22 @@ public class Controller implements Initializable {
                                 sMinValCh4.set(String.valueOf(minValCh4));
                                 sCenterValCh4.set(String.valueOf(centerValCh4));
                                 break;
+
+                            case 4:
+                                pbCh5.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
+                                if (channels[i] < minValCh5) {
+                                    minValCh5 = channels[i];
+                                }
+                                if (channels[i] > maxValCh5) {
+                                    maxValCh5 = channels[i];
+                                }
+                                centerValCh5 = channels[i];
+                                sMaxValCh5.set(String.valueOf(maxValCh5));
+                                sMinValCh5.set(String.valueOf(minValCh5));
+                                sCenterValCh5.set(String.valueOf(centerValCh5));
+                                break;
                         }
                     }
-        //}
 
     }
 
@@ -514,9 +603,6 @@ public class Controller implements Initializable {
     public void updateAttitudeChart(float[] angles) {
 
         if (xAxisSamplesCount > 100) {
-
-            //pitchSeries.getData().remove(0);
-            //rollSeries.getData().remove(0);
 
             NumberAxis xAxis = (NumberAxis) chartAttitude.getXAxis();
             xAxis.setForceZeroInRange(false);
@@ -582,7 +668,6 @@ public class Controller implements Initializable {
         assert serialCombo != null : "fx:id=\"serialCombo\" was not injected: check your FMXL";
         assert pbCh1 != null : "fx:id=\"pbCh1\" was not injected: check your FMXL";
 
-
         //TODO: move the allowed baudrate in a property file
         ObservableList baudRates = FXCollections.observableArrayList("9600","14400","38400","57600","115200");
         baudRateCombo.setItems(baudRates);
@@ -590,10 +675,19 @@ public class Controller implements Initializable {
         updateComPortList();
         updateButtons();
 
+        //Init Axes
+        xAxis.setMaterial(redMaterial);
+        yAxis.setMaterial(greenMaterial);
+        zAxis.setMaterial(blueMaterial);
+        axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
+        axisGroup.setVisible(true);
+
+
         //Initialization of 3D cube TODO: loading of custom 3d model
         blueMaterial.setSpecularColor(Color.LIGHTBLUE);
         imuBox.setMaterial(blueMaterial);
         imuBox.getTransforms().addAll(rxBox, ryBox, rzBox);
+
 
         //Initialization of 3D sphere
         redMaterial.setSpecularColor(Color.LIGHTCORAL);
@@ -607,14 +701,17 @@ public class Controller implements Initializable {
         lbCh2Min.textProperty().bind(sMinValCh2);
         lbCh3Min.textProperty().bind(sMinValCh3);
         lbCh4Min.textProperty().bind(sMinValCh4);
+        lbCh5Min.textProperty().bind(sMinValCh5);
         lbCh1Center.textProperty().bind(sCenterValCh1);
         lbCh2Center.textProperty().bind(sCenterValCh2);
         lbCh3Center.textProperty().bind(sCenterValCh3);
         lbCh4Center.textProperty().bind(sCenterValCh4);
+        lbCh5Center.textProperty().bind(sCenterValCh5);
         lbCh1Max.textProperty().bind(sMaxValCh1);
         lbCh2Max.textProperty().bind(sMaxValCh2);
         lbCh3Max.textProperty().bind(sMaxValCh3);
         lbCh4Max.textProperty().bind(sMaxValCh4);
+        lbCh5Max.textProperty().bind(sMaxValCh5);
 
         //Initialize Charts
         pitchSeries = new XYChart.Series();

@@ -54,9 +54,15 @@ public class AplMessage {
         return builder.toString();
     }
 
-    public static byte[] toByteArray(float value) {
+    public static byte[] floatToByteArray(float value) {
         byte[] bytes = new byte[4];
         ByteBuffer.wrap(bytes).putFloat(value);
+        return bytes;
+    }
+
+    public static byte[] intToByteArray(int value) {
+        byte[] bytes = new byte[Integer.SIZE/Byte.SIZE];
+        ByteBuffer.wrap(bytes).putInt(value);
         return bytes;
     }
 

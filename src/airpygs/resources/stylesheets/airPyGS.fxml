@@ -26,7 +26,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="612.0" prefWidth="784.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="airpygs.Controller">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="airpygs.Controller">
    <top>
       <MenuBar fx:id="menuBar" prefHeight="18.0" prefWidth="614.0" BorderPane.alignment="CENTER">
         <menus>
@@ -51,10 +51,10 @@
       </MenuBar>
    </top>
    <bottom>
-      <TextArea fx:id="cliConsole" prefHeight="0.0" prefWidth="784.0" BorderPane.alignment="CENTER" />
+      <TextArea fx:id="cliConsole" prefHeight="82.0" prefWidth="784.0" BorderPane.alignment="CENTER" />
    </bottom>
    <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="497.0" prefWidth="781.0" BorderPane.alignment="CENTER">
          <children>
             <HBox prefHeight="88.0" prefWidth="785.0">
                <children>
@@ -63,8 +63,8 @@
                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="142.0" minWidth="10.0" prefWidth="90.0" />
                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="249.0" minWidth="10.0" prefWidth="129.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="283.0" minWidth="10.0" prefWidth="211.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="247.0" minWidth="10.0" prefWidth="130.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="209.0" minWidth="10.0" prefWidth="190.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="247.0" minWidth="10.0" prefWidth="163.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="209.0" minWidth="10.0" prefWidth="162.0" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -88,7 +88,7 @@
                               <Insets left="10.0" />
                            </GridPane.margin>
                         </Button>
-                        <Button fx:id="bUpdate" mnemonicParsing="false" onAction="#handleUpdateButtonAction" prefHeight="27.0" prefWidth="140.0" text="Update" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                        <Button fx:id="bUpdate" mnemonicParsing="false" onAction="#handleUpdateButtonAction" prefHeight="27.0" prefWidth="155.0" text="pyboard Code Update" GridPane.columnIndex="3">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin>
@@ -100,17 +100,17 @@
                         </Button>
                         <ImageView id="imgLogoBig" fx:id="imgLogoBig" fitHeight="75.0" fitWidth="89.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.rowIndex="1">
                            <image>
-                              <Image url="@../img/airpy_logo.png" />
+                              <Image url="@../img/airPy_logo.png" />
                            </image>
                            <GridPane.margin>
                               <Insets bottom="10.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <Label text="PyBoard Code" GridPane.columnIndex="3" GridPane.halignment="CENTER">
-                           <font>
-                              <Font name="System Bold" size="13.0" />
-                           </font>
-                        </Label>
+                        <Button fx:id="buttonImu" alignment="CENTER" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#handleImuButtonAction" prefHeight="27.0" prefWidth="155.0" text="Start IMU Streaming" textAlignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                              <Insets top="20.0" />
+                           </GridPane.margin>
+                        </Button>
                      </children>
                      <padding>
                         <Insets left="20.0" top="10.0" />
@@ -118,11 +118,11 @@
                   </GridPane>
                </children>
             </HBox>
-            <TabPane fx:id="apTabPane" prefHeight="398.0" prefWidth="784.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="apTabPane" prefHeight="406.0" prefWidth="778.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab id="rcSetupTab" fx:id="rcPanel" text="RC Setup">
                   <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="246.0" prefWidth="784.0">
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="365.0" prefWidth="784.0">
                            <children>
                               <GridPane layoutX="202.0" prefHeight="295.0" prefWidth="568.0">
                                 <columnConstraints>
@@ -196,12 +196,12 @@
                                  <children>
                                     <Label text="Receiver Type: " />
                                     <ChoiceBox fx:id="comboRxType" disable="true" prefHeight="27.0" prefWidth="130.0" />
-                                    <Button fx:id="buttonCalibration" mnemonicParsing="false" onAction="#handleCalibrationButtonAction" prefHeight="39.0" prefWidth="130.0" text="RX Calibration">
+                                    <Button fx:id="buttonCalibration" disable="true" mnemonicParsing="false" onAction="#handleCalibrationButtonAction" prefHeight="39.0" prefWidth="130.0" text="RX Calibration">
                                        <VBox.margin>
                                           <Insets top="40.0" />
                                        </VBox.margin>
                                     </Button>
-                                    <Button fx:id="buttonEscCalibration" mnemonicParsing="false" onAction="#handleEnableEscCalibrationAction" prefHeight="40.0" prefWidth="130.0" text="Esc Calibration" />
+                                    <Button fx:id="buttonEscCalibration" disable="true" mnemonicParsing="false" onAction="#handleEnableEscCalibrationAction" prefHeight="40.0" prefWidth="130.0" text="Esc Calibration" />
                                  </children>
                                  <opaqueInsets>
                                     <Insets top="40.0" />
@@ -218,7 +218,7 @@
                                 <items>
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="318.0" prefWidth="405.0">
                                        <children>
-                                          <GridPane layoutX="-2.0" layoutY="122.0" prefHeight="110.0" prefWidth="409.0">
+                                          <GridPane layoutX="-2.0" layoutY="51.0" prefHeight="181.0" prefWidth="407.0">
                                             <columnConstraints>
                                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -288,8 +288,7 @@
                                                 </Label>
                                              </children>
                                           </GridPane>
-                                          <Button fx:id="buttonImu" alignment="CENTER" contentDisplay="CENTER" layoutX="123.0" layoutY="48.0" mnemonicParsing="false" onAction="#handleImuButtonAction" prefHeight="44.0" prefWidth="159.0" text="Start IMU Streaming" textAlignment="CENTER" />
-                                          <Button fx:id="buttonGyro" layoutX="123.0" layoutY="261.0" mnemonicParsing="false" onAction="#handleGyroButtonAction" prefHeight="44.0" prefWidth="159.0" text="Start Gyro Calibration" />
+                                          <Button fx:id="buttonGyro" disable="true" layoutX="123.0" layoutY="298.0" mnemonicParsing="false" onAction="#handleGyroButtonAction" prefHeight="44.0" prefWidth="159.0" text="Start Gyro Calibration" />
                                        </children>
                                     </AnchorPane>
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="314.0" prefWidth="363.0">
@@ -329,10 +328,10 @@
                               </LineChart>
                               <CheckBox fx:id="checkBoxPitch" layoutX="29.0" layoutY="101.0" mnemonicParsing="false" onAction="#handleCheckBoxPitch" selected="true" text="Pitch angle" />
                               <CheckBox fx:id="checkBoxRoll" layoutX="221.0" layoutY="101.0" mnemonicParsing="false" onAction="#handleCheckBoxRoll" selected="true" text="Roll angle" />
-                              <CheckBox fx:id="checkBoxMotor3" layoutX="523.0" layoutY="32.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor3" selected="true" text="Motor 3" />
-                              <CheckBox fx:id="checkBoxMotor2" layoutX="524.0" layoutY="62.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor2" selected="true" text="Motor 2" />
-                              <CheckBox fx:id="checkBoxMotor1" layoutX="622.0" layoutY="32.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor1" selected="true" text="Motor 1" />
-                              <CheckBox fx:id="checkBoxMotor4" layoutX="621.0" layoutY="62.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor4" selected="true" text="Motor 4" />
+                              <CheckBox fx:id="checkBoxMotor3" layoutX="609.0" layoutY="102.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor3" selected="true" text="Motor 3" />
+                              <CheckBox fx:id="checkBoxMotor2" layoutX="528.0" layoutY="102.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor2" selected="true" text="Motor 2" />
+                              <CheckBox fx:id="checkBoxMotor1" layoutX="447.0" layoutY="102.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor1" selected="true" text="Motor 1" />
+                              <CheckBox fx:id="checkBoxMotor4" layoutX="690.0" layoutY="102.0" mnemonicParsing="false" onAction="#handleCheckBoxMotor4" selected="true" text="Motor 4" />
                               <Rectangle arcHeight="5.0" arcWidth="5.0" height="80.0" layoutX="11.0" layoutY="11.0" stroke="#aeaeae" strokeType="INSIDE" width="489.0">
                                  <fill>
                                     <LinearGradient endX="1.0" endY="1.0" startY="0.009615384615384581">
@@ -343,7 +342,7 @@
                                     </LinearGradient>
                                  </fill>
                               </Rectangle>
-                              <Button fx:id="buttonSavePIDs" layoutX="433.0" layoutY="49.0" mnemonicParsing="false" onAction="#handleButtonSavePIDs" prefHeight="27.0" prefWidth="60.0" text="Save" />
+                              <Button fx:id="buttonSavePIDs" disable="true" layoutX="433.0" layoutY="49.0" mnemonicParsing="false" onAction="#handleButtonSavePIDs" prefHeight="27.0" prefWidth="60.0" text="Save" />
                               <TextField fx:id="txtKp" layoutX="122.0" layoutY="19.0" prefHeight="27.0" prefWidth="40.0" />
                               <Label layoutX="97.0" layoutY="24.0" text="Kp">
                                  <font>
@@ -396,7 +395,12 @@
                               <TextField fx:id="txtGyroKd" layoutX="194.0" layoutY="49.0" prefHeight="27.0" prefWidth="40.0" />
                               <TextField fx:id="txtGyroKi" layoutX="263.0" layoutY="49.0" prefHeight="27.0" prefWidth="40.0" />
                               <TextField fx:id="txtGyroMaxIncrement" layoutX="379.0" layoutY="49.0" prefHeight="27.0" prefWidth="40.0" />
-                              <Button fx:id="buttonLoadPIDs" layoutX="433.0" layoutY="19.0" mnemonicParsing="false" onAction="#handleButtonLoadPIDs" prefHeight="27.0" prefWidth="60.0" text="Load" />
+                              <Button fx:id="buttonLoadPIDs" disable="true" layoutX="433.0" layoutY="19.0" mnemonicParsing="false" onAction="#handleButtonLoadPIDs" prefHeight="27.0" prefWidth="60.0" text="Load" />
+                              <ImageView fitHeight="90.0" fitWidth="90.0" layoutX="564.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../img/quad_motors_90px.png" />
+                                 </image>
+                              </ImageView>
                            </children>
                         </AnchorPane>
                     </content>

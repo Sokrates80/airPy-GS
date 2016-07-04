@@ -31,6 +31,9 @@ public class ApLinkParams {
     public static final short AP_MESSAGE_GYRO_CALIBRATION = 80;
     public static final short AP_MESSAGE_LOAD_PIDS = 90;
     public static final short AP_MESSAGE_PID_SETTINGS = 100;
+    public static final short AP_MESSAGE_SAVE_TX_SETTINGS_MAX = 110;
+    public static final short AP_MESSAGE_SAVE_TX_SETTINGS_MIN = 120;
+    public static final short AP_MESSAGE_SAVE_TX_SETTINGS_CENTER = 130;
 
     // AirPy Link Protocol general parameters
     public static double MAX_RC_VALUE = 2047.0;  //Maximum value of ab RC channel (11 Bit)
