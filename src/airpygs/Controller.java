@@ -5,6 +5,8 @@ import airpygs.aplink.messages.AplGyroCalibration;
 import airpygs.aplink.messages.TxThresholds;
 import airpygs.graphics.Xform;
 import airpygs.utils.ApConfigManager;
+import airpygs.utils.TxSettings;
+import airpygs.utils.TxSettingsFloat;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -59,6 +61,9 @@ class FileTypesFilter implements FileFilter {
 
 public class Controller implements Initializable {
 
+    //Load config.json
+    ApConfigManager config = ApConfigManager.getInstance();
+
     serialHandler cli;
     RxDecoder rxdec = null;
     TxEncoder txenc = null;
@@ -95,21 +100,9 @@ public class Controller implements Initializable {
     int xAxisSamplesCount = 0;
 
     //Rc Calibration Specific
-    int minValCh1 = 2047;
-    int minValCh2 = 2047;
-    int minValCh3 = 2047;
-    int minValCh4 = 2047;
-    int minValCh5 = 2047;
-    int maxValCh1 = 0;
-    int maxValCh2 = 0;
-    int maxValCh3 = 0;
-    int maxValCh4 = 0;
-    int maxValCh5 = 0;
-    int centerValCh1 = 1023;
-    int centerValCh2 = 1023;
-    int centerValCh3 = 1023;
-    int centerValCh4 = 1023;
-    int centerValCh5 = 1023;
+    ProgressBar[] pbChGroup = new ProgressBar[5];
+    TxSettingsFloat thresholds = new TxSettingsFloat(config.getTxChannelsNumber());
+
     SimpleStringProperty sMinValCh1 = new SimpleStringProperty("");
     SimpleStringProperty sMinValCh2 = new SimpleStringProperty("");
     SimpleStringProperty sMinValCh3 = new SimpleStringProperty("");
@@ -126,8 +119,9 @@ public class Controller implements Initializable {
     SimpleStringProperty sMaxValCh4 = new SimpleStringProperty("");
     SimpleStringProperty sMaxValCh5 = new SimpleStringProperty("");
 
-    //Load config.json
-    ApConfigManager config = ApConfigManager.getInstance();
+    SimpleStringProperty[] sMinVals = {sMinValCh1,sMinValCh2,sMinValCh3,sMinValCh4,sMinValCh5};
+    SimpleStringProperty[] sMaxVals = {sMaxValCh1,sMaxValCh2,sMaxValCh3,sMaxValCh4,sMaxValCh5};
+    SimpleStringProperty[] sCenterVals = {sCenterValCh1,sCenterValCh2,sCenterValCh3,sCenterValCh4,sCenterValCh5};
 
     @FXML
     private LineChart chartAttitude, chartMotors;
@@ -258,21 +252,13 @@ public class Controller implements Initializable {
             Alert txCalibAlert = new Alert(Alert.AlertType.INFORMATION);
             txCalibAlert.setTitle("Tx Calibration - Step 1 of 2");
             txCalibAlert.setHeaderText(null);
-            txCalibAlert.setContentText("Move all the stick in the max and min position then click ok. \n\n" +
+            txCalibAlert.setContentText("Move all the stick in the max and min position. \n\n" +
                     "Press Done when finished");
             txCalibAlert.showAndWait();
 
         } else if(cliConnected & isRxCalibrating == 1) {
             buttonCalibration.setText("Done");
             isRxCalibrating = 2;
-
-            //Save Min and Max values TODO: Load dynamically the values in an array based on the config,json num_channels
-
-            int[] minTxChValues = {minValCh1, minValCh2, minValCh3, minValCh4};
-            txenc.saveTxRxSettings(TxThresholds.MIN, minTxChValues);
-
-            int[] maxTxChValues = {maxValCh1, maxValCh2, maxValCh3, maxValCh4};
-            txenc.saveTxRxSettings(TxThresholds.MAX, maxTxChValues);
 
             //Show next step dialog box
             Alert txCalibAlert = new Alert(Alert.AlertType.INFORMATION);
@@ -286,19 +272,17 @@ public class Controller implements Initializable {
             txenc.disableMessage(ApLinkParams.AP_MESSAGE_RC_INFO);
             isRxCalibrating = 0;
 
-            //Save Center values TODO: Load dynamically the values in an array based on the config,json num_channels
-
-            int[] centerTxChValues = {centerValCh1, centerValCh2, centerValCh3, centerValCh4};
-            txenc.saveTxRxSettings(TxThresholds.CENTER, centerTxChValues);
-
             Alert txCalibAlert = new Alert(Alert.AlertType.INFORMATION);
             txCalibAlert.setTitle("Tx Calibration Completed");
             txCalibAlert.setHeaderText(null);
             txCalibAlert.setContentText("Tx Calibration Completed. \n\n" +
-                    "MIN/MAX/CENTER values have been stored to airPy");
+                    "MIN/MAX/CENTER values sent to airPy");
             txCalibAlert.showAndWait();
 
             buttonCalibration.setText("Start Tx Calibration");
+
+            // Send TxSettings to airPy
+            txenc.saveTxSettings(thresholds);
         }
 
     }
@@ -489,6 +473,12 @@ public class Controller implements Initializable {
         buttonSavePIDs.setDisable(false);
     }
 
+    public  void updateConsole(String message) {
+
+        cliConsole.appendText(message);
+
+    }
+
     private void updateButtons() {
         if (airPySourceFolder != null && airPyDestinationFolder != null)
             bUpdate.setDisable(false);
@@ -513,80 +503,23 @@ public class Controller implements Initializable {
 
     public void updateRcBars(int[] channels) {
 
-                    for (int i = 0; i < channels.length; i++) {
-                        switch (i) {
-                            case 0:
-                                pbCh1.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
-                                if (channels[i] < minValCh1) {
-                                    minValCh1 = channels[i];
-                                }
-                                if (channels[i] > maxValCh1) {
-                                    maxValCh1 = channels[i];
-                                }
-                                centerValCh1 = channels[i];
-                                sMaxValCh1.set(String.valueOf(maxValCh1));
-                                sMinValCh1.set(String.valueOf(minValCh1));
-                                sCenterValCh1.set(String.valueOf(centerValCh1));
-                                break;
+                    for (int i = 0; i < thresholds.NUM_CHANNELS; i++) {
 
-                            case 1:
-                                pbCh2.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
-                                if (channels[i] < minValCh2) {
-                                    minValCh2 = channels[i];
-                                }
-                                if (channels[i] > maxValCh2) {
-                                    maxValCh2 = channels[i];
-                                }
-                                centerValCh2 = channels[i];
-                                sMaxValCh2.set(String.valueOf(maxValCh2));
-                                sMinValCh2.set(String.valueOf(minValCh2));
-                                sCenterValCh2.set(String.valueOf(centerValCh2));
-                                break;
+                        pbChGroup[i].progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
 
-                            case 2:
-                                pbCh3.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
-                                if (channels[i] < minValCh3) {
-                                    minValCh3 = channels[i];
-                                }
-                                if (channels[i] > maxValCh3) {
-                                    maxValCh3 = channels[i];
-                                }
-                                centerValCh3 = channels[i];
-                                sMaxValCh3.set(String.valueOf(maxValCh3));
-                                sMinValCh3.set(String.valueOf(minValCh3));
-                                sCenterValCh3.set(String.valueOf(centerValCh3));
-                                break;
-
-                            case 3:
-                                pbCh4.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
-                                if (channels[i] < minValCh4) {
-                                    minValCh4 = channels[i];
-                                }
-                                if (channels[i] > maxValCh4) {
-                                    maxValCh4 = channels[i];
-                                }
-                                centerValCh4 = channels[i];
-                                sMaxValCh4.set(String.valueOf(maxValCh4));
-                                sMinValCh4.set(String.valueOf(minValCh4));
-                                sCenterValCh4.set(String.valueOf(centerValCh4));
-                                break;
-
-                            case 4:
-                                pbCh5.progressProperty().set(channels[i] / ApLinkParams.MAX_RC_VALUE);
-                                if (channels[i] < minValCh5) {
-                                    minValCh5 = channels[i];
-                                }
-                                if (channels[i] > maxValCh5) {
-                                    maxValCh5 = channels[i];
-                                }
-                                centerValCh5 = channels[i];
-                                sMaxValCh5.set(String.valueOf(maxValCh5));
-                                sMinValCh5.set(String.valueOf(minValCh5));
-                                sCenterValCh5.set(String.valueOf(centerValCh5));
-                                break;
+                        if (channels[i] < thresholds.getMinThreshold(i)) {
+                            thresholds.setMinThreshold(i, channels[i]);
                         }
-                    }
+                        if (channels[i] > thresholds.getMaxThreshold(i)) {
+                            thresholds.setMaxThreshold(i, channels[i]);
+                        }
 
+                        thresholds.setCenterThreshold(i, channels[i]);
+                        sMaxVals[i].set(String.valueOf(thresholds.getMaxThreshold(i)));
+                        sMinVals[i].set(String.valueOf(thresholds.getMinThreshold(i)));
+                        sCenterVals[i].set(String.valueOf(thresholds.getCenterThreshold(i)));
+
+                    }
     }
 
 
@@ -674,6 +607,13 @@ public class Controller implements Initializable {
         baudRateCombo.getSelectionModel().select(baudRates.size()-1);
         updateComPortList();
         updateButtons();
+
+        //Init Progress Bars
+        pbChGroup[0] = pbCh1;
+        pbChGroup[1] = pbCh2;
+        pbChGroup[2] = pbCh3;
+        pbChGroup[3] = pbCh4;
+        pbChGroup[4] = pbCh5;
 
         //Init Axes
         xAxis.setMaterial(redMaterial);

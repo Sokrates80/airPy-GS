@@ -23,8 +23,8 @@ public class ApConfigManager {
         return currentInstance;
     }
 
-    public long getTxChannelsNumber(){
-        return (long) ((JSONObject) config.get("rcRadio")).get("num_channels");
+    public int getTxChannelsNumber(){
+        return ((Long) ((JSONObject) config.get("rcRadio")).get("num_channels")).intValue();
     }
 
     private ApConfigManager(){
