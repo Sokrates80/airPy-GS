@@ -1,11 +1,10 @@
 package airpygs.aplink;
 
-import airpygs.aplink.messages.AplDisableMessage;
-import airpygs.aplink.messages.AplEnableMessage;
-import airpygs.aplink.messages.AplEnableEscCalibration;
-import airpygs.aplink.messages.AplSavePIDs;
-import airpygs.aplink.messages.AplGyroCalibration;
-import airpygs.aplink.messages.AplLoadPIDs;
+import airpygs.aplink.messages.*;
+import airpygs.utils.TxSettings;
+import airpygs.utils.TxSettingsFloat;
+
+import java.util.Arrays;
 
 /**
  * Created by fabrizioscimia on 13/03/16.
@@ -52,6 +51,13 @@ public class TxEncoder {
         if (option == AplGyroCalibration.STOP_CALIBRATION) {
             System.out.println("Sent Giro Calibration Stop Request");
         }
+    }
+
+    public void saveTxSettings(TxSettingsFloat thresholds) {
+        //AplSaveTxSettings test = new AplSaveTxSettings(thresholds);
+        //System.out.println("LEN: " + test.getPayload().length + " - " + Arrays.toString(test.getPayload()));
+        serial.writeBytes((new AplSaveTxSettings(thresholds).getBytes()));
+        System.out.println("Sent Save TX Settings");
     }
 
 }

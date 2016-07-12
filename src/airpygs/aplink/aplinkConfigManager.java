@@ -14,7 +14,7 @@ public class aplinkConfigManager {
     protected aplinkConfigManager() throws IOException {
 
         properties = new Properties();
-        properties.load(getClass().getResourceAsStream("aplink.properties"));
+        properties.load(getClass().getClassLoader().getResourceAsStream("airpygs/resources/config/aplink.properties"));
     }
 
     public static aplinkConfigManager getInstance() {

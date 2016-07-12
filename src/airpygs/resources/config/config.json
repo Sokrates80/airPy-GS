@@ -1,0 +1,38 @@
+{"num_motors": 4,
+  "attitude": {
+    "max_increment": 50,
+    "max_pitch": 25,
+    "max_roll": 25,
+    "max_yaw": 180,
+    "stab_Kp": 2.0,
+    "stab_Kd": 0,
+    "stab_Ki": 1,
+    "max_gyro_increment": 50,
+    "gyro_Kp": 0.6,
+    "gyro_Kd": 0,
+    "gyro_Ki": 0.1,
+    "pitch_offset": -0.1,
+    "roll_offset": -0.75,
+    "pitch_rate_offset": 0.2,
+    "roll_rate_offset": 1.75
+  },
+  "rcRadio": {
+    "type": "sbus",
+    "calibrationStatus": true,
+    "num_channels": 4,
+    "channels_min": [172, 172, 172, 172],
+    "channels_max": [1811, 1811, 1811, 1811],
+    "channels_center": [992, 992, 992, 992]
+  },
+  "esc": {
+    "esc_pwm_min_cmd": 1000,
+    "esc_pwm_center": 1500,
+    "esc_pwm_min": 1140,
+    "esc_pwm_max": 2000,
+    "quadcopter": {
+      "pins": ["X1", "X2", "X3", "X4"],
+      "timers": [5, 5, 5, 5],
+      "channels": [1, 2, 3, 4]
+    }
+  }
+}

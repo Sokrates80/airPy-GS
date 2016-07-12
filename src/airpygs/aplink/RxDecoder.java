@@ -8,6 +8,7 @@ import javafx.beans.property.StringProperty;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -180,6 +181,9 @@ public class RxDecoder extends Thread {
                         if ((short) tmpByte == ApLinkParams.START_BYTE) {
                             startByteFound = true;
                             byteIndex++;
+                        } else {
+                            // print byte to the gui
+                            apGui.updateConsole(new String(new byte[]{ tmpByte }, StandardCharsets.US_ASCII));
                         }
                     }
 
