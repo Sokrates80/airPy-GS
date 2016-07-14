@@ -54,8 +54,6 @@ public class TxEncoder {
     }
 
     public void saveTxSettings(TxSettingsFloat thresholds) {
-        //AplSaveTxSettings test = new AplSaveTxSettings(thresholds);
-        //System.out.println("LEN: " + test.getPayload().length + " - " + Arrays.toString(test.getPayload()));
         serial.writeBytes((new AplSaveTxSettings(thresholds).getBytes()));
         System.out.println("Sent Save TX Settings");
     }

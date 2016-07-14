@@ -2,25 +2,20 @@ package airpygs;
 
 import airpygs.aplink.*;
 import airpygs.aplink.messages.AplGyroCalibration;
-import airpygs.aplink.messages.TxThresholds;
 import airpygs.graphics.Xform;
 import airpygs.utils.ApConfigManager;
-import airpygs.utils.TxSettings;
+import airpygs.utils.FileTypesFilter;
 import airpygs.utils.TxSettingsFloat;
-import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -29,35 +24,12 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.DirectoryChooser;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
-
 import org.apache.commons.io.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-
-class FileTypesFilter implements FileFilter {
-
-    String[] types;
-
-    FileTypesFilter(String[] types) {
-        this.types = types;
-    }
-
-    public boolean accept(File f) {
-        if (f.isDirectory()) {
-            if (f.getName().startsWith("."))
-                return false;
-            else
-                return true;
-        }
-        for (String type : types) {
-            if (f.getName().endsWith(type)) return true;
-        }
-        return false;
-    }
-}
 
 public class Controller implements Initializable {
 
@@ -102,26 +74,9 @@ public class Controller implements Initializable {
     //Rc Calibration Specific
     ProgressBar[] pbChGroup = new ProgressBar[5];
     TxSettingsFloat thresholds = new TxSettingsFloat(config.getTxChannelsNumber());
-
-    SimpleStringProperty sMinValCh1 = new SimpleStringProperty("");
-    SimpleStringProperty sMinValCh2 = new SimpleStringProperty("");
-    SimpleStringProperty sMinValCh3 = new SimpleStringProperty("");
-    SimpleStringProperty sMinValCh4 = new SimpleStringProperty("");
-    SimpleStringProperty sMinValCh5 = new SimpleStringProperty("");
-    SimpleStringProperty sCenterValCh1 = new SimpleStringProperty("");
-    SimpleStringProperty sCenterValCh2 = new SimpleStringProperty("");
-    SimpleStringProperty sCenterValCh3 = new SimpleStringProperty("");
-    SimpleStringProperty sCenterValCh4 = new SimpleStringProperty("");
-    SimpleStringProperty sCenterValCh5 = new SimpleStringProperty("");
-    SimpleStringProperty sMaxValCh1 = new SimpleStringProperty("");
-    SimpleStringProperty sMaxValCh2 = new SimpleStringProperty("");
-    SimpleStringProperty sMaxValCh3 = new SimpleStringProperty("");
-    SimpleStringProperty sMaxValCh4 = new SimpleStringProperty("");
-    SimpleStringProperty sMaxValCh5 = new SimpleStringProperty("");
-
-    SimpleStringProperty[] sMinVals = {sMinValCh1,sMinValCh2,sMinValCh3,sMinValCh4,sMinValCh5};
-    SimpleStringProperty[] sMaxVals = {sMaxValCh1,sMaxValCh2,sMaxValCh3,sMaxValCh4,sMaxValCh5};
-    SimpleStringProperty[] sCenterVals = {sCenterValCh1,sCenterValCh2,sCenterValCh3,sCenterValCh4,sCenterValCh5};
+    SimpleStringProperty[] sMinVals = new SimpleStringProperty[config.getTxChannelsNumber()];
+    SimpleStringProperty[] sMaxVals = new SimpleStringProperty[config.getTxChannelsNumber()];
+    SimpleStringProperty[] sCenterVals = new SimpleStringProperty[config.getTxChannelsNumber()];
 
     @FXML
     private LineChart chartAttitude, chartMotors;
@@ -410,15 +365,13 @@ public class Controller implements Initializable {
             case ON:        ledIndicator.setMaterial(greenMaterial);
                             break;
 
-            case OFF:       //ledIndicator.setMaterial(redMaterial);
-                            ledIndicator.setMaterial(grayMaterial);
+            case OFF:       ledIndicator.setMaterial(grayMaterial);
                             break;
 
             case TOGGLE:    if (toggleFlag) {
                 ledIndicator.setMaterial(greenMaterial);
                 toggleFlag = false;
             } else {
-                //ledIndicator.setMaterial(redMaterial);
                 ledIndicator.setMaterial(grayMaterial);
                 toggleFlag = true;
             }
@@ -435,7 +388,6 @@ public class Controller implements Initializable {
             e.printStackTrace();
         }
         cliConnected = false;
-        //ledIndicator.setMaterial(redMaterial);
         ledIndicator.setMaterial(grayMaterial);
         updateButtons();
 
@@ -518,19 +470,15 @@ public class Controller implements Initializable {
                         sMaxVals[i].set(String.valueOf(thresholds.getMaxThreshold(i)));
                         sMinVals[i].set(String.valueOf(thresholds.getMinThreshold(i)));
                         sCenterVals[i].set(String.valueOf(thresholds.getCenterThreshold(i)));
-
                     }
     }
 
 
     public void updateModelRotations(float[] angles) {
-
         //Update the rotation of the 3D object
         rxBox.setAngle(angles[0]);
         ryBox.setAngle(angles[2]);
         rzBox.setAngle(angles[1]);
-
-
     }
 
     public void updateAttitudeChart(float[] angles) {
@@ -608,6 +556,12 @@ public class Controller implements Initializable {
         updateComPortList();
         updateButtons();
 
+        for (int i = 0; i < config.getTxChannelsNumber(); i++) {
+            sMinVals[i] = new SimpleStringProperty("");
+            sCenterVals[i] = new SimpleStringProperty("");
+            sMaxVals[i] = new SimpleStringProperty("");
+        }
+
         //Init Progress Bars
         pbChGroup[0] = pbCh1;
         pbChGroup[1] = pbCh2;
@@ -631,27 +585,26 @@ public class Controller implements Initializable {
 
         //Initialization of 3D sphere
         redMaterial.setSpecularColor(Color.LIGHTCORAL);
-        //ledIndicator.setMaterial(redMaterial);
         ledIndicator.setMaterial(grayMaterial);
         greenMaterial.setSpecularColor(Color.LIGHTGREEN);
         grayMaterial.setSpecularColor(Color.LIGHTGRAY);
 
         //Initialize RC labels
-        lbCh1Min.textProperty().bind(sMinValCh1);
-        lbCh2Min.textProperty().bind(sMinValCh2);
-        lbCh3Min.textProperty().bind(sMinValCh3);
-        lbCh4Min.textProperty().bind(sMinValCh4);
-        lbCh5Min.textProperty().bind(sMinValCh5);
-        lbCh1Center.textProperty().bind(sCenterValCh1);
-        lbCh2Center.textProperty().bind(sCenterValCh2);
-        lbCh3Center.textProperty().bind(sCenterValCh3);
-        lbCh4Center.textProperty().bind(sCenterValCh4);
-        lbCh5Center.textProperty().bind(sCenterValCh5);
-        lbCh1Max.textProperty().bind(sMaxValCh1);
-        lbCh2Max.textProperty().bind(sMaxValCh2);
-        lbCh3Max.textProperty().bind(sMaxValCh3);
-        lbCh4Max.textProperty().bind(sMaxValCh4);
-        lbCh5Max.textProperty().bind(sMaxValCh5);
+        lbCh1Min.textProperty().bind(sMinVals[0]);
+        lbCh2Min.textProperty().bind(sMinVals[1]);
+        lbCh3Min.textProperty().bind(sMinVals[2]);
+        lbCh4Min.textProperty().bind(sMinVals[3]);
+        lbCh5Min.textProperty().bind(sMinVals[4]);
+        lbCh1Center.textProperty().bind(sCenterVals[0]);
+        lbCh2Center.textProperty().bind(sCenterVals[1]);
+        lbCh3Center.textProperty().bind(sCenterVals[2]);
+        lbCh4Center.textProperty().bind(sCenterVals[3]);
+        lbCh5Center.textProperty().bind(sCenterVals[4]);
+        lbCh1Max.textProperty().bind(sMaxVals[0]);
+        lbCh2Max.textProperty().bind(sMaxVals[1]);
+        lbCh3Max.textProperty().bind(sMaxVals[2]);
+        lbCh4Max.textProperty().bind(sMaxVals[3]);
+        lbCh5Max.textProperty().bind(sMaxVals[4]);
 
         //Initialize Charts
         pitchSeries = new XYChart.Series();
@@ -671,7 +624,6 @@ public class Controller implements Initializable {
         motor4Series = new XYChart.Series();
         motor4Series.setName("Motor 4");
 
-
         chartAttitude.getData().add(pitchSeries);
         chartAttitude.getData().add(rollSeries);
         chartAttitude.getData().add(pitchVelSeries);
@@ -684,8 +636,5 @@ public class Controller implements Initializable {
         chartMotors.setAnimated(true);
 
         checkBoxPitch.setSelected(true);
-
-
-
     }
 }
