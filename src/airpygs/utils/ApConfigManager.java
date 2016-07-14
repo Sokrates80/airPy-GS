@@ -4,10 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Created by fabrizioscimia on 04/07/16.
@@ -31,9 +28,8 @@ public class ApConfigManager {
         jsonp = new JSONParser();
 
         try {
-
-            File file = new File(getClass().getClassLoader().getResource("airpygs/resources/config/config.json").getFile());
-            config = (JSONObject) jsonp.parse(new FileReader(file));
+            String path = ApConfigManager.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("airPyGS.jar","");
+            config = (JSONObject) jsonp.parse(new FileReader(path + "/config.json"));
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
