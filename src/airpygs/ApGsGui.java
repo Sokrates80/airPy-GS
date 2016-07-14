@@ -12,7 +12,7 @@ public class ApGsGui extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("airpygs/resources/stylesheets/airPyGS.fxml"));
         primaryStage.setTitle("airPy Ground Station");
-        primaryStage.setScene(new Scene(root, 900, 500));
+        primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
     }
 
