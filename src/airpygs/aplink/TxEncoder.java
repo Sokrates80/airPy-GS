@@ -3,7 +3,6 @@ package airpygs.aplink;
 import airpygs.aplink.messages.*;
 import airpygs.utils.TxSettings;
 import airpygs.utils.TxSettingsFloat;
-
 import java.util.Arrays;
 
 /**
